@@ -1,6 +1,6 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../';
+import dot from '../../';
 
 describe('Customisation', () => {
   it('should support renaming of arg', () => {

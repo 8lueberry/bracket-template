@@ -1,0 +1,6 @@
+{
+  "preset": "airbnb",
+  "excludeFiles": [".build/**", "node_modules/**", "locales/**"],
+  "validateQuoteMarks": null,
+  "disallowSpacesInsideTemplateStringPlaceholders": null
+}

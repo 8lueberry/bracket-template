@@ -1,6 +1,6 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../';
+import dot from '../../';
 
 describe('Sections', () => {
   it('should support empty argument', () => {
@@ -112,5 +112,18 @@ test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 
     );
     const result = template();
     expect(result).toEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
+  });
+
+  fit('should support multiple sections', () => {
+    const template = dot.template(
+      `tmpl-[[# block1('test1') ]]-[[# block2('test2') ]]
+[[## block1(arg)
+test1-[[= arg ]]
+#]][[## block2(arg)
+test2-[[= arg ]]
+#]]`
+    );
+    const result = template();
+    expect(result).toEqual('tmpl-test1-test1-test2-test2\n');
   });
 });

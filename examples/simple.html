@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Blocks</title>
+  </head>
+  <body>
+
+    <div>
+      Hello from html,
+      <span id="tmpl-1-container"></span>
+    </div>
+
+    <script id="tmpl-1" type="text/html">
+      <span>Hello from template, [[= model.test1 ]]</span>
+    </script>
+
+    <script src="../dist/bracket.min.js"></script>
+    <script>
+      var templateData = document.getElementById('tmpl-1').innerHTML;
+      var template = bracket.template(templateData);
+
+      document.getElementById('tmpl-1-container')
+        .innerHTML = template({ test1: 'Hello from model' });
+    </script>
+
+  </body>
+</html>

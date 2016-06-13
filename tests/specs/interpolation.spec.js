@@ -1,6 +1,6 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../';
+import dot from '../../';
 
 describe('Interpolation', () => {
   it('should interpolate model values', () => {

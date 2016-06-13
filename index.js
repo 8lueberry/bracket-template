@@ -1,22 +1,8 @@
 import pkg from './package';
 
-const logger = {
-  // enables the log
-  enable: false,
-
-  context: (name) => {
-    const result = {
-      debug: (...args) => {
-        if (logger.enable) {
-          console.log(name, ...args);
-        }
-      },
-    };
-    return result;
-  },
-};
-
 const settings = {
+  log: false,
+
   // Extract anything inside [[ ]] to be evaluated as js
   evaluate: /\[\[([\s\S]+?(\}?)+)]]/g,
 
@@ -36,6 +22,22 @@ const settings = {
   // The params to pass to the template function
   // For multiple params, comma delimited e.g. 'model,model2,model3...'
   varname: 'model',
+};
+
+const logger = {
+  // enables the log
+  enable: false,
+
+  context: (name) => {
+    const result = {
+      debug: (...args) => {
+        if (settings.log) {
+          console.log(name, ...args);
+        }
+      },
+    };
+    return result;
+  },
 };
 
 function template(tmpl, conf) {
@@ -118,9 +120,16 @@ function template(tmpl, conf) {
   return new Function(c.varname, str); // eslint-disable-line
 }
 
-export default {
+const res = {
   version: pkg.version,
   logger,
   settings,
   template,
 };
+
+// browser
+if (typeof module === 'undefined' || !module.exports) {
+  window.bracket = res;
+}
+
+export default res;

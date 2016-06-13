@@ -1,6 +1,6 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../';
+import dot from '../../';
 
 describe('Evaluation', () => {
   it('should evaluate if', () => {
