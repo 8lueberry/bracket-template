@@ -114,7 +114,7 @@ test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 
     expect(result).toEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
   });
 
-  fit('should support multiple sections', () => {
+  it('should support multiple sections', () => {
     const template = dot.template(
       `tmpl-[[# block1('test1') ]]-[[# block2('test2') ]]
 [[## block1(arg)

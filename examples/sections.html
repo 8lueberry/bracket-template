@@ -2,17 +2,25 @@
 <html lang="en">
   <head>
     <title>Blocks</title>
+    <style type="text/css">
+      .rendered {
+        border:solid 1px #000;
+        padding: 10px;
+        background-color: #eee;
+      }
+    </style>
   </head>
   <body>
+    <div id="tmpl-1-container" class="rendered"></div>
 
-    <div>
-      Hello from html,
-      <span id="tmpl-1-container"></span>
-    </div>
-
+    <script src="../dist/bracket.min.js"></script>
+    
     <script id="tmpl-1" type="text/html">
-      [[# section1('arg1') ]],
-      [[# section2('arg2') ]]
+      Hello from template
+      <ul>
+        <li>[[# section1('arg1') ]]</li>
+        <li>[[# section2('arg2') ]]</li>
+      </ul>
 
       [[## section1(arg)
         Hello from section1 ([[= arg ]])
@@ -23,13 +31,13 @@
       #]]
     </script>
 
-    <script src="../dist/bracket.min.js"></script>
     <script>
-      var templateData = document.getElementById('tmpl-1').innerHTML;
-      var template = bracket.template(templateData);
+      var template = bracket.template(
+        document.getElementById('tmpl-1').innerHTML
+      );
 
       document.getElementById('tmpl-1-container')
-        .innerHTML = template({ test1: 'Hello from model' });
+        .innerHTML = template();
     </script>
 
   </body>
