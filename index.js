@@ -1,7 +1,8 @@
 import pkg from './package';
 
+// TODO: detect browser
 // const isBrowser = (typeof module === 'undefined' || !module.exports);
-const isBrowser = true;
+const isBrowser = false;
 
 const settings = {
   log: false,

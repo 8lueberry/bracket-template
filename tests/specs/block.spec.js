@@ -2,7 +2,7 @@
 
 import dot from '../../';
 
-describe('Sections', () => {
+describe('Blocks', () => {
   it('should support empty argument', () => {
     const template = dot.template(`tmpl-[[# block1() ]]
 [[## block1()
@@ -13,7 +13,7 @@ test
     expect(result).toEqual('tmpl-test\n');
   });
 
-  it('should support section argument', () => {
+  it('should support block argument', () => {
     const template = dot.template(`tmpl-[[# block1('aaa', 'bbb') ]]
 [[## block1(arg1, arg2)
 test-[[= arg1 ]]-[[= arg2 ]]
@@ -114,7 +114,7 @@ test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 
     expect(result).toEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
   });
 
-  it('should support multiple sections', () => {
+  it('should support multiple blocks', () => {
     const template = dot.template(
       `tmpl-[[# block1('test1') ]]-[[# block2('test2') ]]
 [[## block1(arg)
