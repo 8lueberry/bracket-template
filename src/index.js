@@ -1,8 +1,4 @@
-import pkg from './package';
-
-// TODO: detect browser
-// const isBrowser = (typeof module === 'undefined' || !module.exports);
-const isBrowser = false;
+/* global window VERSION */
 
 const settings = {
   log: false,
@@ -29,14 +25,11 @@ const settings = {
 };
 
 const logger = {
-  // enables the log
-  enable: false,
-
   context: (name) => {
     const result = {
       debug: (...args) => {
         if (settings.log) {
-          console.log(name, ...args);
+          console.log(name, ': ', ...args);
         }
       },
     };
@@ -117,23 +110,31 @@ function template(tmpl, conf) {
   // build the template function body
   str = `var out='${str}';return out;`
     // remove the newlines or '' will break
-    .replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t')
-		.replace(/(\s|;|\}|^|\{)out\+='';/g, '$1').replace(/\+''/g, '');
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n')
+    .replace(/\t/g, '\\t')
+    .replace(/(\s|;|\}|^|\{)out\+='';/g, '$1')
+    .replace(/\+''/g, '');
 
   logger.context('template').debug('Generated template function:', str);
   return new Function(c.varname, str); // eslint-disable-line
 }
 
 const res = {
-  version: pkg.version,
+  version: VERSION, // read from package.json
   logger,
   settings,
   template,
 };
 
 // browser
+const isBrowser = (typeof window !== 'undefined');
+
 if (isBrowser) {
+  logger.context('global').debug('Browser context, adding to window.bracket');
   window.bracket = res;
+} else {
+  logger.context('global').debug('Node context');
 }
 
 export default res;

@@ -1,6 +1,6 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../../';
+import dot from '../../..';
 
 describe('Customisation', () => {
   it('should support renaming of arg', () => {
@@ -28,7 +28,7 @@ describe('Customisation', () => {
 {{## block1(arg)
 {{= arg }}-{{ if (model.arg1 < model.arg2) { }}{{= model.arg2 }}{{ } }}
 #}}`,
-      conf
+      conf,
     );
     const result = template({ arg1: 123, arg2: 456 });
     expect(result).toEqual('tmpl-test-456\n');

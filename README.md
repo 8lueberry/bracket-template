@@ -6,10 +6,15 @@
 
 - Ultrafast
 - Learn in 1 minute
-- Uses `[[ ]]` by default, so it plays well with `{{ }}` (Angular, Ember...)
+- Uses `[[ ]]` by default, so plays well with `{{ }}` (Angular, Ember...)
 - Blocks for reuse
+- Compatible with node (including express) and most browsers
 
 ## Getting started
+
+TODO:
+
+## Language definition
 
 ### Javascript execution
 

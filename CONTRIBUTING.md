@@ -12,6 +12,14 @@
 - Run `npm install`
 - Test the installation by running `npm test`
 
+## Repo structure
+
+|-dist
+|-examples
+|-scripts
+|-tests
+|-index.js
+
 ## Testing
 
 - `$ npm test`

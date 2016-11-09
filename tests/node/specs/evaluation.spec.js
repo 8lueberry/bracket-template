@@ -1,6 +1,6 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../../';
+import dot from '../../..';
 
 describe('Evaluation', () => {
   it('should evaluate if', () => {
@@ -11,7 +11,7 @@ describe('Evaluation', () => {
 
   it('should evaluate for', () => {
     const template = dot.template(
-      'tmpl-[[ for(var i=0; i<model.tests.length; i++) { ]][[= model.tests[i] ]][[ } ]]'
+      'tmpl-[[ for(var i=0; i<model.tests.length; i++) { ]][[= model.tests[i] ]][[ } ]]',
     );
     const result = template({ tests: ['test1', 'test2', 'test3'] });
     expect(result).toEqual('tmpl-test1test2test3');

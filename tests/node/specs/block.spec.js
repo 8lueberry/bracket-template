@@ -1,14 +1,13 @@
 /* global describe fdescribe it fit expect */
 
-import dot from '../../';
+import dot from '../../..';
 
 describe('Blocks', () => {
   it('should support empty argument', () => {
     const template = dot.template(`tmpl-[[# block1() ]]
 [[## block1()
 test
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test\n');
   });
@@ -17,8 +16,7 @@ test
     const template = dot.template(`tmpl-[[# block1('aaa', 'bbb') ]]
 [[## block1(arg1, arg2)
 test-[[= arg1 ]]-[[= arg2 ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-aaa-bbb\n');
   });
@@ -27,8 +25,7 @@ test-[[= arg1 ]]-[[= arg2 ]]
     const template = dot.template(`tmpl-[[# block1('aaa') ]]
 [[## block1(arg)
 test-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-aaa\n');
   });
@@ -37,8 +34,7 @@ test-[[= arg ]]
     const template = dot.template(`tmpl-[[# block1(null) ]]
 [[## block1(arg)
 test-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-null\n');
   });
@@ -47,8 +43,7 @@ test-[[= arg ]]
     const template = dot.template(`tmpl-[[# block1(undefined) ]]
 [[## block1(arg)
 test-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-undefined\n');
   });
@@ -57,8 +52,7 @@ test-[[= arg ]]
     const template = dot.template(`tmpl-[[# block1() ]]
 [[## block1(arg)
 test-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-undefined\n');
   });
@@ -67,8 +61,7 @@ test-[[= arg ]]
     const template = dot.template(`tmpl-[[# block1('aaa') ]]
 [[## block1(arg1, arg2)
 test-[[= arg1 ]]-[[= arg2 ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-aaa-undefined\n');
   });
@@ -77,8 +70,7 @@ test-[[= arg1 ]]-[[= arg2 ]]
     const template = dot.template(`tmpl-[[# block1(123) ]]
 [[## block1(arg)
 test-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-123\n');
   });
@@ -87,8 +79,7 @@ test-[[= arg ]]
     const template = dot.template(`tmpl-[[# block1(true) ]]
 [[## block1(arg)
 test-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-true\n');
   });
@@ -97,8 +88,7 @@ test-[[= arg ]]
     const template = dot.template(`tmpl-[[# block1({ test1: 'aaa', test2: 456, test3: true }) ]]
 [[## block1(arg)
 test-[[= arg.test1 ]]-[[= arg.test2 ]]-[[= arg.test3 ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-aaa-456-true\n');
   });
@@ -108,8 +98,7 @@ test-[[= arg.test1 ]]-[[= arg.test2 ]]-[[= arg.test3 ]]
       `tmpl-[[# block1({ test1: 'aaa', test2: 123 }, true, 456, { test1: 'bbb', test2: 789 }) ]]
 [[## block1(arg1, arg2, arg3, arg4)
 test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 ]]-[[= arg4.test2 ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
   });
@@ -121,8 +110,7 @@ test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 
 test1-[[= arg ]]
 #]][[## block2(arg)
 test2-[[= arg ]]
-#]]`
-    );
+#]]`);
     const result = template();
     expect(result).toEqual('tmpl-test1-test1-test2-test2\n');
   });
