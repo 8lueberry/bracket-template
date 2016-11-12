@@ -8,7 +8,7 @@
   },
   "main": "./dist/bracket.js",
   "scripts": {
-    "test": "./node_modules/.bin/eslint ./src/**/* ./tools/**/* ./tests/**/* && ./node_modules/.bin/babel-node ./tests/run.js",
+    "test": "./node_modules/.bin/eslint ./src/**/* ./tools/**/* ./tests/**/* && ./node_modules/.bin/babel-node ./tests/run.js && ./node_modules/.bin/babel-node ./tests/runBrowser.js",
     "test-browser": "./node_modules/.bin/babel-node ./tests/runBrowser.js",
     "test-all": "./node_modules/.bin/eslint ./src/**/* ./tools/**/* ./tests/**/* && ./node_modules/.bin/babel-node ./tests/run.js && ./node_modules/.bin/babel-node ./tests/runBrowser.js",
     "lint": "./node_modules/.bin/eslint ./src/**/* ./tools/**/* ./tests/**/*",
