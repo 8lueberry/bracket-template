@@ -61,3 +61,13 @@ You can also manually run the linter `$ npm run lint`.
 ## Distributing
 
 - `$ npm run build` to build the distribution code for the browser and node.
+
+### Publishing a new version
+
+- `$ npm version 1.0.0`
+- `$ npm publish`
+
+### Patching existing version
+
+- `$ npm patch`
+- `$ npm publish`
