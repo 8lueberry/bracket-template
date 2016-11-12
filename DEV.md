@@ -21,23 +21,28 @@ Make sure you have [EditorConfig](http://editorconfig.org/#download) installed f
 ```
 .
 ├── /dist/                      # The folder for compiled output
-│   ├── bracket.min.js          # Browser lib (minified)
-│   └── node.js                 # Node lib
+│   ├── bracket.js              # Node lib
+│   └── bracket.min.js          # Browser lib
 ├── /examples/                  # The code usage examples
 │   ├── /browser/               # Browser sample code
 │   └── /node/                  # Node sample code
 ├── /node_modules/              # 3rd-party libraries and utilities
 ├── /src/                       # The source code of the application        
 ├── /tests/                     # The test code
+│   ├── /helpers/               # Test helpers
+│   ├── /specs/                 # Test specs to be run
+│   ├── run.js                  # Run test in a node environment
+│   └── runBrowser.js           # Run test in a browser environment
 ├── /tools/                     # Build automation scripts and utilities
-├── .babelrc                    # ()
-├── .editorconfig               # ()
-├── .eslintrc                   # ()
-├── .eslintignore               # ()
-├── .gitignore                  # ()
-├── .jscsrc                     # ()
-├── .nvmrc                      # ()
-├── jsconfig.json               # (visual code)
+├── .babelignore                # Babel ignore files
+├── .babelrc                    # Babel config
+├── .editorconfig               # IDE config (spacing...)
+├── .eslintignore               # eslint ignore files
+├── .eslintrc                   # eslint config
+├── .gitignore                  # git ignore files
+├── .nvmrc                      # NVM node version
+├── .travis.yml                 # Travis test config
+├── jsconfig.json               # Visual studio code config
 └── package.json                # The list of 3rd party libraries and utilities
 ```
 

@@ -1,5 +1,5 @@
 import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
-import webpackConfig from './webpackConfig';
+import webpackConfig from './webpack.conf';
 
 function buildBrowser() {
   console.log('Building browser..');
