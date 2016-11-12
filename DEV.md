@@ -50,6 +50,8 @@ You can also manually run the linter `$ npm run lint`.
 ## Testing
 
 - `$ npm test`
+- `$ npm test-browser`
+- `$ npm test-all`
 
 ## Distributing
 
