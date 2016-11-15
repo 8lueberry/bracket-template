@@ -10,12 +10,6 @@
 - Blocks for reuse
 - Compatible with node (including express) and modern browsers
 
-## TL;DR
-
-* Html templating system for nodejs and frontend
-* Write HTML and execute javascript between `[[` and `]]`
-* Define, call and reuse blocks (e.g. headers, footers, nav...)
-
 ## Getting started
 
 See the [examples](examples)
@@ -42,3 +36,9 @@ Hello [[# block1('bracket') ]]
 ```
 
 Result: `Hello bracket from block 1`
+
+## TL;DR
+
+* Html templating system for nodejs and frontend
+* Write HTML and execute javascript between `[[` and `]]`
+* Define, call and reuse blocks (e.g. headers, footers, nav...)
