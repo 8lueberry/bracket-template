@@ -1,4 +1,7 @@
-# Braket
+# Braket-template
+
+[![GitHub version](https://badge.fury.io/gh/danlevan%2Fbracket-template.svg)](http://badge.fury.io/gh/danlevan%2Fbracket-template)
+[![npm version](https://badge.fury.io/js/bracket-template.svg)](http://badge.fury.io/js/bracket-template) [![Bower version](https://badge.fury.io/bo/google-material-color.svg)](http://badge.fury.io/bo/google-material-color)
 
 > Minimal Javascript engine compatible with node.js and frontend browser.
 
