@@ -8,11 +8,11 @@
 - Learn in 1 minute
 - Uses `[[ ]]` by default, so plays well with `{{ }}` (Angular, Ember...)
 - Blocks for reuse
-- Compatible with node (including express) and most browsers
+- Compatible with node (including express) and modern browsers
 
 ## Getting started
 
-TODO:
+See the [examples](examples)
 
 ## Language definition
 
@@ -28,11 +28,17 @@ Call blocks with `[[# ... ]]`
 For example
 
 ```
-Hello [[# block1('world') ]]
+Hello [[# block1('bracket') ]]
 
 [[## block1(arg1)
-[[= arg ]] from block 1
+  [[= arg ]] from block 1
 #]]
 ```
 
-Result: `Hello world from block 1`
+Result: `Hello bracket from block 1`
+
+## TL;DR
+
+* Html templating system for nodejs and frontend
+* Write HTML and execute javascript between `[[` and `]]`
+* Define, call and reuse blocks (e.g. headers, footers, nav...)
