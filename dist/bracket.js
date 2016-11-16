@@ -190,7 +190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var res = {
-	  version: ("0.0.1"),
+	  version: ("1.0.0"), // read from package.json
 	  logger: logger,
 	  settings: settings,
 	  template: template
