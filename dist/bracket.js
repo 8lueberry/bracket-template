@@ -62,8 +62,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* global window VERSION */
 
 	var settings = {
-	  log: false,
-
 	  // Extract anything inside [[ ]] to be evaluated as js
 	  evaluate: /\[\[([\s\S]+?(\}?)+)]]/g,
 
@@ -85,25 +83,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  varname: 'model'
 	};
 
-	var logger = {
-	  context: function context(name) {
-	    var result = {
-	      debug: function debug() {
-	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	          args[_key] = arguments[_key];
-	        }
-
-	        if (settings.log) {
-	          var _console;
-
-	          (_console = console).log.apply(_console, [name, ': '].concat(args));
-	        }
-	      }
-	    };
-	    return result;
-	  }
-	};
-
 	function compile(tmpl, conf) {
 	  var str = tmpl || '';
 	  var c = Object.assign({}, settings, conf);
@@ -112,9 +91,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  str = str
 	  // handle section def
 	  .replace(c.blockDef, function (m, name, args, body) {
-	    var log = logger.context('block.def');
-	    log.debug(name + ' accepting ' + args);
-
 	    blocks[name] = {
 	      args: args.split(',').map(function (a) {
 	        return a.trim();
@@ -126,14 +102,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // handle section call
 	  .replace(c.block, function (m, name, args) {
-	    var log = logger.context('block.call');
-
 	    if (!blocks[name]) {
-	      log.debug('Block doesn\'t exist');
 	      return '';
 	    }
-
-	    log.debug('Calling ' + name + ' with ' + args);
 
 	    // arg -> value
 	    var argValues = [];
@@ -145,8 +116,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      hash[k] = argValues.length <= i ? undefined : argValues[i];
 	      return hash;
 	    }, {});
-
-	    log.debug('Lookup args:', lookup);
 
 	    var blockStr = blocks[name].body.replace(c.interpolate, function (m2, codeVal) {
 	      var code = codeVal.trim();
@@ -160,13 +129,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Generate the value by making a scoped function
 	      // e.g. function() { var arg = { test1: '123' }; return arg.test1; }
 	      var valStr = 'var ' + key + '=' + lookup[key] + ';return ' + code + ';';
-	      log.debug('Arg retrieval for ' + code + ' (' + key + ') -> ' + valStr);
 	      var val = Function(valStr)(); // eslint-disable-line
 
 	      return '\';out+=' + JSON.stringify(val) + ';out+=\'';
 	    });
 
-	    log.debug('Replaced:', blockStr);
 	    return blockStr;
 	  })
 
@@ -185,13 +152,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // remove the newlines or '' will break
 	  ).replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/(\s|;|\}|^|\{)out\+='';/g, '$1').replace(/\+''/g, '');
 
-	  logger.context('template').debug('Generated template function:', str);
 	  return new Function(c.varname, str); // eslint-disable-line
 	}
 
 	var res = {
 	  version:  false ? 'test' : ("1.0.2"), // read from package.json
-	  logger: logger,
 	  settings: settings,
 	  compile: compile
 	};
@@ -200,10 +165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var isBrowser = typeof window !== 'undefined';
 
 	if (isBrowser) {
-	  logger.context('global').debug('Browser context, adding to window.bracket');
 	  window.bracket = res;
-	} else {
-	  logger.context('global').debug('Node context');
 	}
 
 	exports.default = res;

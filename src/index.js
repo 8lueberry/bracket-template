@@ -1,8 +1,6 @@
 /* global window VERSION */
 
 const settings = {
-  log: false,
-
   // Extract anything inside [[ ]] to be evaluated as js
   evaluate: /\[\[([\s\S]+?(\}?)+)]]/g,
 
@@ -24,19 +22,6 @@ const settings = {
   varname: 'model',
 };
 
-const logger = {
-  context: (name) => {
-    const result = {
-      debug: (...args) => {
-        if (settings.log) {
-          console.log(name, ': ', ...args);
-        }
-      },
-    };
-    return result;
-  },
-};
-
 function compile(tmpl, conf) {
   let str = tmpl || '';
   const c = Object.assign({}, settings, conf);
@@ -45,9 +30,6 @@ function compile(tmpl, conf) {
   str = str
     // handle section def
     .replace(c.blockDef, (m, name, args, body) => {
-      const log = logger.context('block.def');
-      log.debug(`${name} accepting ${args}`);
-
       blocks[name] = {
         args: args.split(',').map(a => a.trim()),
         body,
@@ -57,14 +39,9 @@ function compile(tmpl, conf) {
 
     // handle section call
     .replace(c.block, (m, name, args) => {
-      const log = logger.context('block.call');
-
       if (!blocks[name]) {
-        log.debug('Block doesn\'t exist');
         return '';
       }
-
-      log.debug(`Calling ${name} with ${args}`);
 
       // arg -> value
       const argValues = [];
@@ -76,8 +53,6 @@ function compile(tmpl, conf) {
         hash[k] = argValues.length <= i ? undefined : argValues[i];
         return hash;
       }, {});
-
-      log.debug('Lookup args:', lookup);
 
       const blockStr = blocks[name].body.replace(c.interpolate, (m2, codeVal) => {
         const code = codeVal.trim();
@@ -91,13 +66,11 @@ function compile(tmpl, conf) {
         // Generate the value by making a scoped function
         // e.g. function() { var arg = { test1: '123' }; return arg.test1; }
         const valStr = `var ${key}=${lookup[key]};return ${code};`;
-        log.debug(`Arg retrieval for ${code} (${key}) -> ${valStr}`);
         const val = Function(valStr)(); // eslint-disable-line
 
         return `';out+=${JSON.stringify(val)};out+='`;
       });
 
-      log.debug('Replaced:', blockStr);
       return blockStr;
     })
 
@@ -116,13 +89,11 @@ function compile(tmpl, conf) {
     .replace(/(\s|;|\}|^|\{)out\+='';/g, '$1')
     .replace(/\+''/g, '');
 
-  logger.context('template').debug('Generated template function:', str);
   return new Function(c.varname, str); // eslint-disable-line
 }
 
 const res = {
   version: typeof VERSION === 'undefined' ? 'test' : VERSION, // read from package.json
-  logger,
   settings,
   compile,
 };
@@ -131,10 +102,7 @@ const res = {
 const isBrowser = (typeof window !== 'undefined');
 
 if (isBrowser) {
-  logger.context('global').debug('Browser context, adding to window.bracket');
   window.bracket = res;
-} else {
-  logger.context('global').debug('Node context');
 }
 
 export default res;
