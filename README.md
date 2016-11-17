@@ -22,6 +22,16 @@ See the [examples](examples)
 ### Javascript execution
 
 Anything between `[[ ... ]]` is executed as javascript.
+Anything bewteen `[[= ... ]]` is interpolated (i.e. print string values)
+
+For example
+
+```
+[[ var test = 'wor'; ]]
+Hello [[= test + '..ld' ]]
+```
+
+Result: `Hello wor..ld`
 
 ### Block definition
 
@@ -39,6 +49,63 @@ Hello [[# block1('bracket') ]]
 ```
 
 Result: `Hello bracket from block 1`
+
+### Layout (node only)
+
+When used in node parent layouts are supported. Layout declarations are done in [yaml](http://yaml.org) at the beginning of the template file.
+
+`master.dot`
+
+```
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>[[= layout.title ]]</title>
+  </head>
+  <body>
+    Hello from master.dot <br />
+    [[= layout.section1 ]] <br />
+    [[= layout.section2 ]]
+  </body>
+</html>
+```
+
+`index.dot`
+
+```
+---
+layout: master.dot
+title: Index page
+---
+
+[[##section1:
+  Hello from index.dot
+#]]
+
+[[##section2:
+  Hello from index.dot again
+#]]
+```
+
+`Result`
+
+```
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Index page</title>
+  </head>
+  <body>
+    Hello from master.dot <br />
+    Hello from index.dot <br />
+    Hello from index.dot again
+  </body>
+</html>
+```
+
+## Customization
+
+TODO:
 
 ## TL;DR
 

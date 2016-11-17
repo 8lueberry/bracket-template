@@ -27,7 +27,8 @@
     ///////////////////////////////////////////////////////////////////////////
     -->
     <script id="tmpl-1" type="text/html">
-      Hello from template
+      [[ var dummy = 'wo'; ]]
+      Hello from template [[= dummy + 'rld' ]]
       <ul>
         <li>[[= model.test1 ]]</li>
       </ul>

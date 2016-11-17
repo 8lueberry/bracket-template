@@ -98,10 +98,8 @@ const res = {
   compile,
 };
 
-// browser
-const isBrowser = (typeof window !== 'undefined');
-
-if (isBrowser) {
+// browser: add to window.bracket
+if (typeof window !== 'undefined') {
   window.bracket = res;
 }
 

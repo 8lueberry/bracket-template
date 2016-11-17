@@ -156,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var res = {
-	  version:  false ? 'test' : ("1.0.2"), // read from package.json
+	  version:  false ? 'test' : ("1.0.3"), // read from package.json
 	  settings: settings,
 	  compile: compile
 	};
