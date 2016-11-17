@@ -1,8 +1,8 @@
 var bracket = require('../../dist/bracket').default; // require('bracket-template').default;
 var express = require('express');
 
-// good practice to call template() once and cache the template function for reuse
-var homeTemplate = bracket.template(`
+// good practice to call compile() once and cache the template function for reuse
+var homeTemplate = bracket.compile(`
 <html>
   <body>
     Hello from template: [[= model.test1 ]]

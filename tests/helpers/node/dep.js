@@ -1,6 +1,6 @@
 /* global beforeAll */
 
-import bracket from '../../../../bracket';
+import bracket from '../../../src/';
 
 beforeAll(() => {
   global.bracket = bracket;
