@@ -104,7 +104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	function template(tmpl, conf) {
+	function compile(tmpl, conf) {
 	  var str = tmpl || '';
 	  var c = Object.assign({}, settings, conf);
 	  var blocks = {};
@@ -190,10 +190,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var res = {
-	  version: ("1.0.0"), // read from package.json
+	  version:  false ? 'test' : ("1.0.2"), // read from package.json
 	  logger: logger,
 	  settings: settings,
-	  template: template
+	  compile: compile
 	};
 
 	// browser

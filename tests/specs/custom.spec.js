@@ -3,14 +3,14 @@
 describe('Customisation', () => {
   it('should support renaming of arg', () => {
     const conf = { varname: 'custom' };
-    const template = bracket.template('tmpl-[[= custom ]]', conf);
+    const template = bracket.compile('tmpl-[[= custom ]]', conf);
     const result = template('test');
     expect(result).toEqual('tmpl-test');
   });
 
   it('should support multiple args', () => {
     const conf = { varname: 'model1,model2' };
-    const template = bracket.template('tmpl-[[= model1 ]]-[[= model2 ]]', conf);
+    const template = bracket.compile('tmpl-[[= model1 ]]-[[= model2 ]]', conf);
     const result = template('test1', 'test2');
     expect(result).toEqual('tmpl-test1-test2');
   });
@@ -22,7 +22,7 @@ describe('Customisation', () => {
       block: /\{\{#\s*([\w]+)\(([\s\S]*?)\)\s*}}/g,
       blockDef: /\{\{##\s*([\w]+)\(([\s\S]*)\)\s*[\n]([\s\S]*)\n\s*#}}/g,
     };
-    const template = bracket.template(`tmpl-{{# block1('test') }}
+    const template = bracket.compile(`tmpl-{{# block1('test') }}
 {{## block1(arg)
 {{= arg }}-{{ if (model.arg1 < model.arg2) { }}{{= model.arg2 }}{{ } }}
 #}}`,

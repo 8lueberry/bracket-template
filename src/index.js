@@ -37,7 +37,7 @@ const logger = {
   },
 };
 
-function template(tmpl, conf) {
+function compile(tmpl, conf) {
   let str = tmpl || '';
   const c = Object.assign({}, settings, conf);
   const blocks = {};
@@ -121,10 +121,10 @@ function template(tmpl, conf) {
 }
 
 const res = {
-  version: VERSION, // read from package.json
+  version: typeof VERSION === 'undefined' ? 'test' : VERSION, // read from package.json
   logger,
   settings,
-  template,
+  compile,
 };
 
 // browser

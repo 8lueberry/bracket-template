@@ -21,7 +21,7 @@
 
     <script src="../../dist/bracket.min.js"></script>
 
-    <!-- 
+    <!--
     ///////////////////////////////////////////////////////////////////////////
     // This is the template html
     ///////////////////////////////////////////////////////////////////////////
@@ -33,17 +33,17 @@
       </ul>
     </script>
 
-    <!-- 
+    <!--
     ///////////////////////////////////////////////////////////////////////////
     // This is the bootstrap code
     ///////////////////////////////////////////////////////////////////////////
     -->
     <script>
       // build the template method. Cache this method for reuse.
-      var template = bracket.template(
+      var template = bracket.compile(
         document.getElementById('tmpl-1').innerHTML
       );
-      
+
       // call template method and inject result to tmpl-1-container
       document.getElementById('tmpl-1-container')
         .innerHTML = template({ test1: 'Hello from model' });
