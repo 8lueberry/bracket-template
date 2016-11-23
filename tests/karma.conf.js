@@ -18,6 +18,7 @@ module.exports = (config) => {
       'dist/bracket.min.js',
       'tests/helpers/browser/**/*.js',
       'tests/**/*.spec.js',
+      '!tests/specs/layout.spec.js',
     ],
 
 

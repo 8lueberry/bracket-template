@@ -1,3 +1,8 @@
+/*
+ * Bracket template library
+ *
+ */
+
 /* global window VERSION */
 
 const settings = {
@@ -22,6 +27,12 @@ const settings = {
   varname: 'model',
 };
 
+/**
+ * Compile creates a template function
+ * @param {string} tmpl - The html template to compile
+ * @param {object} conf - The configuration to override
+ * @return {function} The template function
+ */
 function compile(tmpl, conf) {
   let str = tmpl || '';
   const c = Object.assign({}, settings, conf);
@@ -92,6 +103,7 @@ function compile(tmpl, conf) {
   return new Function(c.varname, str); // eslint-disable-line
 }
 
+// The object to export
 const res = {
   version: typeof VERSION === 'undefined' ? 'test' : VERSION, // read from package.json
   settings,

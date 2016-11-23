@@ -59,6 +59,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _bracket = __webpack_require__(1);
+
+	var _bracket2 = _interopRequireDefault(_bracket);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _bracket2.default;
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	/* global window VERSION */
 
 	var settings = {
@@ -161,10 +179,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  compile: compile
 	};
 
-	// browser
-	var isBrowser = typeof window !== 'undefined';
-
-	if (isBrowser) {
+	// browser: add to window.bracket
+	if (typeof window !== 'undefined') {
 	  window.bracket = res;
 	}
 

@@ -4,7 +4,7 @@ import pkg from '../package.json';
 
 const browserConfig = {
   target: 'web',
-  entry: './src/index.js',
+  entry: './src/bracket.js',
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: 'bracket.min.js',
@@ -57,7 +57,7 @@ const browserConfig = {
 
 const nodeConfig = {
   target: 'node',
-  entry: './src/index.js',
+  entry: './src/layout.js',
   output: {
     libraryTarget: 'umd',
     path: path.resolve(__dirname, '../dist'),
