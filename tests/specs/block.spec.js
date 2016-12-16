@@ -1,4 +1,4 @@
-/* global describe fdescribe it fit expect bracket */
+/* global describe fdescribe xdescribe it fit xit expect bracket */
 
 describe('Blocks', () => {
   it('should support empty argument', () => {
@@ -7,7 +7,7 @@ describe('Blocks', () => {
 test
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test\n');
+    expect(result).toAlmostEqual('tmpl-test\n');
   });
 
   it('should support block argument', () => {
@@ -16,7 +16,7 @@ test
 test-[[= arg1 ]]-[[= arg2 ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-aaa-bbb\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-bbb\n');
   });
 
   it('should support strings', () => {
@@ -25,7 +25,7 @@ test-[[= arg1 ]]-[[= arg2 ]]
 test-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-aaa\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa\n');
   });
 
   it('should support null', () => {
@@ -34,7 +34,7 @@ test-[[= arg ]]
 test-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-null\n');
+    expect(result).toAlmostEqual('tmpl-test-null\n');
   });
 
   it('should support undefined', () => {
@@ -43,7 +43,7 @@ test-[[= arg ]]
 test-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-undefined\n');
+    expect(result).toAlmostEqual('tmpl-test-undefined\n');
   });
 
   it('should support undefined (implicit)', () => {
@@ -52,7 +52,7 @@ test-[[= arg ]]
 test-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-undefined\n');
+    expect(result).toAlmostEqual('tmpl-test-undefined\n');
   });
 
   it('should support undefined (implicit as second arg)', () => {
@@ -61,7 +61,7 @@ test-[[= arg ]]
 test-[[= arg1 ]]-[[= arg2 ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-aaa-undefined\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-undefined\n');
   });
 
   it('should support numbers', () => {
@@ -70,7 +70,7 @@ test-[[= arg1 ]]-[[= arg2 ]]
 test-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-123\n');
+    expect(result).toAlmostEqual('tmpl-test-123\n');
   });
 
   it('should support boolean', () => {
@@ -79,7 +79,7 @@ test-[[= arg ]]
 test-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-true\n');
+    expect(result).toAlmostEqual('tmpl-test-true\n');
   });
 
   it('should support complex object', () => {
@@ -88,7 +88,7 @@ test-[[= arg ]]
 test-[[= arg.test1 ]]-[[= arg.test2 ]]-[[= arg.test3 ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-aaa-456-true\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-456-true\n');
   });
 
   it('should support complex combitations of var', () => {
@@ -98,7 +98,7 @@ test-[[= arg.test1 ]]-[[= arg.test2 ]]-[[= arg.test3 ]]
 test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 ]]-[[= arg4.test2 ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
   });
 
   it('should support multiple blocks', () => {
@@ -110,6 +110,6 @@ test1-[[= arg ]]
 test2-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toEqual('tmpl-test1-test1-test2-test2\n');
+    expect(result).toAlmostEqual('tmpl-test1-test1-test2-test2\n');
   });
 });

@@ -74,11 +74,11 @@ Hello [[# block1('world') ]]
 
 → **Result** `Hello from block 1 (with 'world')`
 
-### Layout and partials (node only)
+## Extras for node
 
 When used in node, you can define a master layout and include partial files.
 
-#### Layout 
+### Layout 
 
 Layout declarations are done in [yaml](http://yaml.org) at the beginning of the template file.
 
@@ -86,9 +86,11 @@ Layout declarations are done in [yaml](http://yaml.org) at the beginning of the 
 
 ```html
 ---
-layout: master.dot
+master: master.dot
 title: Index page
 ---
+
+<!-- Define blocks used in master.dot -->
 
 [[## body()
   Hello from index.dot
@@ -127,6 +129,56 @@ title: Index page
     Hello from master.dot <br />
     Hello from index.dot <br />
     Hello from index.dot again
+  </body>
+</html>
+```
+
+**Pro tip**: Custom variables can be defined in the yaml (like title in the example) and used in the master.
+
+### Partials
+
+You can include another file in your template file.
+
+**index.dot**
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    [[## partial('header.dot', { current: 'contact' }) ]]
+  </body>
+</html>
+```
+
+**header.dot**
+
+```html
+<nav>
+  <ul>
+    <li>Home</li>
+    <li>Contact</li>
+  </ul>
+</nav>
+```
+
+→ **Result**
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li>Home</li>
+        <li>Contact</li>
+      </ul>
+    </nav>
   </body>
 </html>
 ```

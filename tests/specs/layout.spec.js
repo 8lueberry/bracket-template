@@ -1,13 +1,17 @@
-/* global describe fdescribe it fit expect bracket */
+/* global describe fdescribe xdescribe it fit xit expect bracket */
 
-fdescribe('Layout', () => {
+describe('Layout', () => {
   it('should include master layout', () => {
-    const template = bracket.compile(`---
-    layout: ../fixtures/master.dot
-    ---
-    tmpl-child
-    `);
+    const template = bracket.compile(
+      `---
+  master: ../fixtures/master.brkt.html
+---
+    tmpl-child`,
+      {
+        path: __dirname,
+      },
+    );
     const result = template();
-    expect(result).toEqual('tmpl-master tmpl-child');
+    expect(result).toAlmostEqual('tmpl-master tmpl-child');
   });
 });
