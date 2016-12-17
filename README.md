@@ -3,19 +3,17 @@
 [![GitHub version](https://badge.fury.io/gh/danlevan%2Fbracket-template.svg)](http://badge.fury.io/gh/danlevan%2Fbracket-template)
 [![npm version](https://badge.fury.io/js/bracket-template.svg)](http://badge.fury.io/js/bracket-template)
 
-> Minimal Javascript engine compatible with node.js and frontend browser.
+> Minimal (über fast) Javascript engine compatible with node.js and browsers.
 
 ## TL;DR
 
 - Javascript templating lib for node and modern browsers 
 - Ultra fast, ultra small, ultra fast to learn 
 - Uses `[[ ]]` by default (customizable), so plays well with `{{ }}` (Angular, Ember...)
-- Blocks definition for reuse
-- Layout support when using in node
+- Define and call your own block definition (functions) for reuse
+- Node: Parent layout and include files supported
 
 ## Getting started
-
-Bracket is on npm as `bracket-template`
 
 `$ npm i bracket-template`
 
@@ -29,13 +27,13 @@ If you want to use bracket with express, it's recommended to use [consolidate.js
 
 ## Node (API)
 
-You can also use the template engine directly (for building your email templates for example).
+If you want to use bracket in your node project for building your email templates for example, you can use it directly. (For Express, it's recommended to use [consolidate.js](https://www.npmjs.com/package/consolidate))
 
 [example](examples/node/simple.js)
 
 ## Browser
 
-Bracket works great with modern browsers. The tests are run on the latest chrome browser (more tests to come).
+Bracket works great with modern browsers. The tests are run on the latest chrome browser (more browser tests to come).
 
 [example](examples)
 

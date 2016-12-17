@@ -1,4 +1,8 @@
-/* global describe fdescribe xdescribe it fit xit expect bracket */
+/* global describe fdescribe xdescribe it fit xit
+describeTable fdescribeTable xdescribeTable
+entry fentry xentry
+expect bracket
+*/
 
 describe('Blocks', () => {
   it('should support empty argument', () => {
@@ -19,41 +23,22 @@ test-[[= arg1 ]]-[[= arg2 ]]
     expect(result).toAlmostEqual('tmpl-test-aaa-bbb\n');
   });
 
-  it('should support strings', () => {
-    const template = bracket.compile(`tmpl-[[# block1('aaa') ]]
+  describeTable('should support simple arg',
+    (arg, resultString) => {
+      const template = bracket.compile(`tmpl-[[# block1(${arg}) ]]
 [[## block1(arg)
 test-[[= arg ]]
 #]]`);
-    const result = template();
-    expect(result).toAlmostEqual('tmpl-test-aaa\n');
-  });
-
-  it('should support null', () => {
-    const template = bracket.compile(`tmpl-[[# block1(null) ]]
-[[## block1(arg)
-test-[[= arg ]]
-#]]`);
-    const result = template();
-    expect(result).toAlmostEqual('tmpl-test-null\n');
-  });
-
-  it('should support undefined', () => {
-    const template = bracket.compile(`tmpl-[[# block1(undefined) ]]
-[[## block1(arg)
-test-[[= arg ]]
-#]]`);
-    const result = template();
-    expect(result).toAlmostEqual('tmpl-test-undefined\n');
-  });
-
-  it('should support undefined (implicit)', () => {
-    const template = bracket.compile(`tmpl-[[# block1() ]]
-[[## block1(arg)
-test-[[= arg ]]
-#]]`);
-    const result = template();
-    expect(result).toAlmostEqual('tmpl-test-undefined\n');
-  });
+      const result = template();
+      expect(result).toAlmostEqual(resultString);
+    },
+    entry('should support string', '\'aaa\'', 'tmpl-test-aaa'),
+    entry('should support null', 'null', 'tmpl-test-null'),
+    entry('should support undefined', 'undefined', 'tmpl-test-undefined'),
+    entry('should support undefined (implicit)', '', 'tmpl-test-undefined'),
+    entry('should support numbers', '123', 'tmpl-test-123'),
+    entry('should support boolean', 'true', 'tmpl-test-true'),
+  );
 
   it('should support undefined (implicit as second arg)', () => {
     const template = bracket.compile(`tmpl-[[# block1('aaa') ]]
@@ -62,24 +47,6 @@ test-[[= arg1 ]]-[[= arg2 ]]
 #]]`);
     const result = template();
     expect(result).toAlmostEqual('tmpl-test-aaa-undefined\n');
-  });
-
-  it('should support numbers', () => {
-    const template = bracket.compile(`tmpl-[[# block1(123) ]]
-[[## block1(arg)
-test-[[= arg ]]
-#]]`);
-    const result = template();
-    expect(result).toAlmostEqual('tmpl-test-123\n');
-  });
-
-  it('should support boolean', () => {
-    const template = bracket.compile(`tmpl-[[# block1(true) ]]
-[[## block1(arg)
-test-[[= arg ]]
-#]]`);
-    const result = template();
-    expect(result).toAlmostEqual('tmpl-test-true\n');
   });
 
   it('should support complex object', () => {

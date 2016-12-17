@@ -1,4 +1,8 @@
-/* global describe fdescribe xdescribe it fit xit expect bracket */
+/* global describe fdescribe xdescribe it fit xit
+describeTable fdescribeTable xdescribeTable
+entry fentry xentry
+expect bracket
+*/
 
 describe('Layout', () => {
   it('should include master layout', () => {

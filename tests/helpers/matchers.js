@@ -1,25 +1,23 @@
 /* global beforeEach jasmine it xit fit */
 
 const customMatchers = {
-  toAlmostEqual: (util, customEqualityTesters) => {
-    return {
-      compare: (actual, expected) => {
-        const cleanActual = actual
-          .trim()
-          .replace(/\n/g, '')
-          .replace(/\s+/g, ' '); // remove extra whitespace
+  toAlmostEqual: (util, customEqualityTesters) => ({
+    compare: (actual, expected) => {
+      const cleanActual = actual
+        .trim()
+        .replace(/\n/g, '')
+        .replace(/\s+/g, ' '); // remove extra whitespace
 
-        const cleanExpected = expected
-          .trim()
-          .replace(/\n/g, '')
-          .replace(/\s+/g, ' '); // remove extra whitespace
+      const cleanExpected = expected
+        .trim()
+        .replace(/\n/g, '')
+        .replace(/\s+/g, ' '); // remove extra whitespace
 
-        return {
-          pass: util.equals(cleanActual, cleanExpected, customEqualityTesters),
-        };
-      },
-    };
-  },
+      return {
+        pass: util.equals(cleanActual, cleanExpected, customEqualityTesters),
+      };
+    },
+  }),
 };
 
 beforeEach(() => {
@@ -28,7 +26,7 @@ beforeEach(() => {
 
 function addDataTableSupport() {
   function executeTest(name, fn, entries, override) {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       const itName = `${name} ${entry.name}`;
       const itFn = async () => await fn(...entry.params);
       (override || entry.proxy)(itName, itFn);

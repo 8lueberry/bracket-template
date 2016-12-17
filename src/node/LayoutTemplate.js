@@ -1,20 +1,19 @@
 import * as yaml from 'js-yaml';
 import * as path from 'path';
-import TemplateStore from './TemplateStore';
+import LayoutHelper from './LayoutHelper';
 import LayoutDependency from './LayoutDependency';
+import TemplateStore from './TemplateStore';
 
 // map for caching dependency files (raw file)
 const layoutStore = new TemplateStore();
+const layoutHelper = new LayoutHelper({
+  store: layoutStore,
+});
 
 // default helpers
 const helpers = {
-  partial,
+  partial: (...args) => layoutHelper.partial(...args),
 };
-
-function partial(filepath, partialModel) {
-  const tmpl = layoutStore.get(filepath);
-  return tmpl;
-}
 
 class LayoutTemplate {
   constructor(opts = {
