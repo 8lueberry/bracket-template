@@ -8,9 +8,11 @@ describe('Layout', () => {
   it('should include master layout', () => {
     const template = bracket.compile(
       `---
-  master: ../fixtures/master.brkt.html
+master: ../fixtures/master.brkt.html
 ---
-    tmpl-child`,
+[[## body1()
+  tmpl-child
+#]]`,
       {
         path: __dirname,
       },
@@ -18,4 +20,6 @@ describe('Layout', () => {
     const result = template();
     expect(result).toAlmostEqual('tmpl-master tmpl-child');
   });
+
+  xit('should support custom variable');
 });
