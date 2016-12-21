@@ -37,7 +37,7 @@ test-[[= arg ]]
     entry('should support undefined', 'undefined', 'tmpl-test-undefined'),
     entry('should support undefined (implicit)', '', 'tmpl-test-undefined'),
     entry('should support numbers', '123', 'tmpl-test-123'),
-    entry('should support boolean', 'true', 'tmpl-test-true'),
+    entry('should support boolean', 'true', 'tmpl-test-true') // eslint-disable-line
   );
 
   it('should support undefined (implicit as second arg)', () => {

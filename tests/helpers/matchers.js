@@ -1,4 +1,8 @@
-/* global beforeEach jasmine it xit fit */
+/* global window beforeEach jasmine it xit fit */
+
+if (typeof global === 'undefined') {
+  global = window; // eslint-disable-line
+}
 
 const customMatchers = {
   toAlmostEqual: (util, customEqualityTesters) => ({

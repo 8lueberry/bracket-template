@@ -19,13 +19,13 @@ module.exports = (config) => {
       'tests/helpers/*.js',
       'tests/helpers/browser/**/*.js',
       'tests/**/*.spec.js',
-      '!tests/specs/layout.spec.js',
-      '!tests/specs/partial.spec.js',
     ],
 
 
     // list of files to exclude
     exclude: [
+      'tests/specs/layout.spec.js',
+      'tests/specs/partial.spec.js',
     ],
 
 
