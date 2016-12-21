@@ -72,6 +72,28 @@ Hello [[# block1('world') ]]
 
 → **Result** `Hello from block 1 (with 'world')`
 
+### Helper methods
+
+Helper methods can be passed during the compilation of the template. This is especially useful for passing a translation method for example.
+
+Example
+
+```javascript
+var template = bracket.compile(
+  "Hello world: [[# translate('Hello world') ]]",
+  {
+    helpers: {
+      translate: function(text) {
+        return 'Bonjour le monde';
+      }
+    }
+  }
+);
+template();
+```
+
+→ **Result** `Hello world: Bonjour le monde`
+
 ## Extras for node
 
 When used in node, you can define a master layout and include partial files.
@@ -105,7 +127,7 @@ title: Index page
 <!doctype html>
 <html lang="en">
   <head>
-    <title>[[= layout.title ]]</title>
+    <title>[[= layout.title || 'default title' ]]</title>
   </head>
   <body>
     Hello from master.dot <br />
@@ -131,7 +153,9 @@ title: Index page
 </html>
 ```
 
-**Pro tip**: Custom variables can be defined in the yaml (like title in the example) and used in the master.
+**Pro tip**
+- Custom variables can be defined in the yaml (like title in the example) and used in the master.
+- Default values in this format `[[= layout.title || 'default title' ]]`
 
 ### Partials
 
