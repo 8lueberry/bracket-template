@@ -16,6 +16,7 @@ module.exports = (config) => {
     // list of files / patterns to load in the browser
     files: [
       'dist/bracket.min.js',
+      'tests/helpers/*.js',
       'tests/helpers/browser/**/*.js',
       'tests/**/*.spec.js',
     ],
@@ -23,6 +24,8 @@ module.exports = (config) => {
 
     // list of files to exclude
     exclude: [
+      'tests/specs/layout.spec.js',
+      'tests/specs/partial.spec.js',
     ],
 
 

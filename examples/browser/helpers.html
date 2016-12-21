@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Simple</title>
+    <title>Helpers</title>
     <style type="text/css">
       .rendered {
         border:dashed 1px #000;
@@ -27,11 +27,8 @@
     ///////////////////////////////////////////////////////////////////////////
     -->
     <script id="tmpl-1" type="text/html">
-      [[ var dummy = 'wo'; ]]
-      Hello from template [[= dummy + 'rld' ]]
-      <ul>
-        <li>[[= model.test1 ]]</li>
-      </ul>
+      Hello from template<br />
+      [[# helper1('dummy') ]]
     </script>
 
     <!--
@@ -42,12 +39,19 @@
     <script>
       // build the template method. Cache this method for reuse.
       var template = bracket.compile(
-        document.getElementById('tmpl-1').innerHTML
+        document.getElementById('tmpl-1').innerHTML,
+        {
+          helpers: {
+            helper1: function(arg1) {
+              return 'Hello from helper1 with arg1=' + arg1;
+            },
+          },
+        }
       );
 
       // call template method and inject result to tmpl-1-container
       document.getElementById('tmpl-1-container')
-        .innerHTML = template({ test1: 'Hello from model' });
+        .innerHTML = template();
     </script>
 
   </body>

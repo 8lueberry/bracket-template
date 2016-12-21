@@ -1,3 +1,8 @@
+/*
+ * Bracket template library
+ *
+ */
+
 /* global window VERSION */
 
 const settings = {
@@ -20,45 +25,68 @@ const settings = {
   // The params to pass to the template function
   // For multiple params, comma delimited e.g. 'model,model2,model3...'
   varname: 'model',
+
+  // helper functions
+  helpers: {},
 };
 
+/**
+ * Compile creates a template function
+ * @param {string} tmpl - The html template to compile
+ * @param {object} conf - The configuration to override
+ * @return {function} The template function
+ */
 function compile(tmpl, conf) {
   let str = tmpl || '';
   const c = Object.assign({}, settings, conf);
   const blocks = {};
 
   str = str
-    // handle section def
-    .replace(c.blockDef, (m, name, args, body) => {
+    // handle block def
+    .replace(c.blockDef, (m, name, argStr, body) => {
       blocks[name] = {
-        args: args.split(',').map(a => a.trim()),
+        args: argStr.split(',').map(a => a.trim()),
         body,
       };
       return '';
     })
 
-    // handle section call
-    .replace(c.block, (m, name, args) => {
-      if (!blocks[name]) {
+    // handle block call
+    .replace(c.block, (m, name, argStr) => {
+      // no block definition
+      if (!c.helpers[name] && !blocks[name]) {
         return '';
       }
 
-      // arg -> value
-      const argValues = [];
-      args.replace(c.argValues, (m2, val) => {
-        argValues.push(val);
+      // split arg string
+      const args = [];
+      argStr.replace(c.argValues, (m2, val) => {
+        args.push(val);
       });
+
+      // call helpers
+      if (c.helpers[name]) {
+        const val = c.helpers[name](...args.map(a => Function(`return ${a};`)())); // eslint-disable-line
+        return `';out+=${JSON.stringify(val)};out+='`;
+      }
+
+      // call block def
+
+      // maps arg name and value
       const lookup = blocks[name].args.reduce((res, k, i) => {
         const hash = res;
-        hash[k] = argValues.length <= i ? undefined : argValues[i];
+        hash[k] = args.length <= i ? undefined : args[i];
         return hash;
       }, {});
 
+      // replace block def with arg values
       const blockStr = blocks[name].body.replace(c.interpolate, (m2, codeVal) => {
         const code = codeVal.trim();
 
         // support obj.arg
         const key = code.split('.')[0];
+
+        // key not found then leave it as is
         if (!(key in lookup)) {
           return m2;
         }
@@ -92,16 +120,15 @@ function compile(tmpl, conf) {
   return new Function(c.varname, str); // eslint-disable-line
 }
 
+// The object to export
 const res = {
   version: typeof VERSION === 'undefined' ? 'test' : VERSION, // read from package.json
   settings,
   compile,
 };
 
-// browser
-const isBrowser = (typeof window !== 'undefined');
-
-if (isBrowser) {
+// browser: add to window.bracket
+if (typeof window !== 'undefined') {
   window.bracket = res;
 }
 

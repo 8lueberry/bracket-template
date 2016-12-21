@@ -1,2 +1,4 @@
 dist/*
 examples/*
+
+*.brkt.html
