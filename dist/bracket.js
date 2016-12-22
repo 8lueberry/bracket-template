@@ -88,8 +88,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // header keys
 	  keys: {
-	    master: 'master'
-	  },
+	    master: 'master', // header master key
+	    layout: 'layout' },
 
 	  // root path for views
 	  path: process.cwd(),
@@ -112,7 +112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tmpl: tmpl
 	  });
 
-	  return _bracket2.default.compile(template.compile(), c);
+	  return _bracket2.default.compile(template.compile(), template.conf);
 	}
 
 	var res = Object.assign({}, _bracket2.default, {
@@ -155,7 +155,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // extract the argument values from a function call
 	  // e.g. { test1: '123', test2: 456, test3: true }, 'aaa', true, {}, ''
-	  argValues: /\s*({[\s\S]*?}|[^,]+)/g,
+	  argValues: /\s*({[\s\S]*?}|[^,]+)/g, // TODO: bug with , and }
 
 	  // The params to pass to the template function
 	  // For multiple params, comma delimited e.g. 'model,model2,model3...'
@@ -165,31 +165,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  helpers: {}
 	};
 
-	/**
-	 * Compile creates a template function
-	 * @param {string} tmpl - The html template to compile
-	 * @param {object} conf - The configuration to override
-	 * @return {function} The template function
-	 */
-	function compile(tmpl, conf) {
-	  var str = tmpl || '';
-	  var c = Object.assign({}, settings, conf);
-	  var blocks = {};
-
-	  str = str
-	  // handle block def
-	  .replace(c.blockDef, function (m, name, argStr, body) {
-	    blocks[name] = {
-	      args: argStr.split(',').map(function (a) {
-	        return a.trim();
-	      }),
-	      body: body
-	    };
-	    return '';
-	  })
-
-	  // handle block call
-	  .replace(c.block, function (m, name, argStr) {
+	function handleBlockCall(c, blocks) {
+	  return function (m, name, argStr) {
 	    // no block definition
 	    if (!c.helpers[name] && !blocks[name]) {
 	      return '';
@@ -220,8 +197,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return hash;
 	    }, {});
 
+	    var blockStr = blocks[name].body
 	    // replace block def with arg values
-	    var blockStr = blocks[name].body.replace(c.interpolate, function (m2, codeVal) {
+	    .replace(c.interpolate, function (m2, codeVal) {
 	      var code = codeVal.trim();
 
 	      // support obj.arg
@@ -238,10 +216,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var val = Function(valStr)(); // eslint-disable-line
 
 	      return '\';out+=' + JSON.stringify(val) + ';out+=\'';
-	    });
+	    })
+	    // recursive handle block call
+	    .replace(c.block, handleBlockCall(c, blocks));
 
 	    return blockStr;
+	  };
+	}
+
+	/**
+	 * Compile creates a template function
+	 * @param {string} tmpl - The html template to compile
+	 * @param {object} conf - The configuration to override
+	 * @return {function} The template function
+	 */
+	function compile(tmpl, conf) {
+	  var str = tmpl || '';
+	  var c = Object.assign({}, settings, conf);
+	  var blocks = {};
+
+	  str = str
+	  // handle block def
+	  .replace(c.blockDef, function (m, name, argStr, body) {
+	    blocks[name] = {
+	      args: argStr.split(',').map(function (a) {
+	        return a.trim();
+	      }),
+	      body: body
+	    };
+	    return '';
 	  })
+
+	  // handle block call
+	  .replace(c.block, handleBlockCall(c, blocks))
 
 	  // convert models
 	  .replace(c.interpolate, function (m, code) {
@@ -263,7 +270,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// The object to export
 	var res = {
-	  version:  false ? 'test' : ("1.0.3"), // read from package.json
+	  version:  false ? 'test' : ("1.1.1"), // read from package.json
 	  settings: settings,
 	  compile: compile
 	};
@@ -337,7 +344,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // TODO: assert opts.conf
 	    this.conf = opts.conf;
-	    this.conf.helpers = Object.assign({}, helpers, opts.conf.helpers);
 
 	    var _parseTemplate = parseTemplate(this.conf, opts.tmpl),
 	        header = _parseTemplate.header,
@@ -347,24 +353,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.header = header;
 	    this.tmpl = tmpl;
 	    this.deps = deps;
+
+	    // add helper data (partials, variables from child)
+	    this.conf.helpers = Object.assign({}, helpers, opts.conf.helpers);
 	  }
 
 	  _createClass(LayoutTemplate, [{
 	    key: 'compile',
 	    value: function compile() {
+	      var _this = this;
+
+	      var header = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
 	      if (this.deps.hasCircular()) {
 	        throw new Error('Has circular dependencies');
 	      }
 
-	      if (this.deps.hasMaster()) {
-	        var masterLayoutTemplate = new LayoutTemplate({
-	          conf: this.conf,
-	          tmpl: layoutStore.get(this.deps.master.path)
+	      if (!this.deps.hasMaster()) {
+	        // header support
+	        var layout = '';
+	        Object.keys(header).filter(function (key) {
+	          return key !== 'master';
+	        }).forEach(function (key) {
+	          layout += _this.conf.keys.layout + '.' + key + '=' + JSON.stringify(header[key]) + ';';
 	        });
-	        return masterLayoutTemplate.compile() + this.tmpl;
+	        layout = layout ? '[[ var ' + this.conf.keys.layout + '={};' + layout + ' ]]' : '';
+
+	        return layout + ' ' + this.tmpl;
 	      }
 
-	      return this.tmpl;
+	      var masterLayoutTemplate = new LayoutTemplate({
+	        conf: this.conf,
+	        tmpl: layoutStore.get(this.deps.master.path)
+	      });
+
+	      var newHeader = Object.assign({}, this.header, header);
+
+	      return this.tmpl + ' ' + masterLayoutTemplate.compile(newHeader);
 	    }
 	  }, {
 	    key: 'toString',
