@@ -32,7 +32,7 @@ describe('Customisation', () => {
 #}}`,
       conf);
     const result = template({ arg1: 123, arg2: 456 });
-    expect(result).toAlmostEqual('tmpl-test-456\n');
+    expect(result).toAlmostEqual('tmpl-test-456');
   });
 
   describe('Helpers', () => {

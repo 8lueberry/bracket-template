@@ -11,7 +11,7 @@ describe('Blocks', () => {
 test
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-test\n');
+    expect(result).toAlmostEqual('tmpl-test');
   });
 
   it('should support block argument', () => {
@@ -20,7 +20,7 @@ test
 test-[[= arg1 ]]-[[= arg2 ]]
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-test-aaa-bbb\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-bbb');
   });
 
   describeTable('should support simple arg',
@@ -46,7 +46,7 @@ test-[[= arg ]]
 test-[[= arg1 ]]-[[= arg2 ]]
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-test-aaa-undefined\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-undefined');
   });
 
   it('should support complex object', () => {
@@ -55,7 +55,7 @@ test-[[= arg1 ]]-[[= arg2 ]]
 test-[[= arg.test1 ]]-[[= arg.test2 ]]-[[= arg.test3 ]]
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-test-aaa-456-true\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-456-true');
   });
 
   it('should support complex combitations of var', () => {
@@ -65,7 +65,7 @@ test-[[= arg.test1 ]]-[[= arg.test2 ]]-[[= arg.test3 ]]
 test-[[= arg1.test1 ]]-[[= arg1.test2 ]]-[[= arg2 ]]-[[= arg3 ]]-[[= arg4.test1 ]]-[[= arg4.test2 ]]
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-test-aaa-123-true-456-bbb-789\n');
+    expect(result).toAlmostEqual('tmpl-test-aaa-123-true-456-bbb-789');
   });
 
   it('should support multiple blocks', () => {
@@ -77,7 +77,7 @@ test1-[[= arg ]]
 test2-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-test1-test1-test2-test2\n');
+    expect(result).toAlmostEqual('tmpl-test1-test1-test2-test2');
   });
 
 
@@ -90,7 +90,7 @@ block1-[[= arg ]]-[[# block2('test2') ]]
 block2-[[= arg ]]
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-block1-test1-block2-test2\n');
+    expect(result).toAlmostEqual('tmpl-block1-test1-block2-test2');
   });
 
   xit('should support arg with ,');

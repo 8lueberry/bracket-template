@@ -107,4 +107,6 @@ test2: test2-val
     const result = template();
     expect(result).toAlmostEqual('tmpl-master test-val test2-val tmpl-master2 test-val test2-val tmpl-child test-val');
   });
+
+  xit('should support changing to curly');
 });
