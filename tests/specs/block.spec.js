@@ -92,4 +92,7 @@ block2-[[= arg ]]
     const result = template();
     expect(result).toAlmostEqual('tmpl-block1-test1-block2-test2\n');
   });
+
+  xit('should support arg with ,');
+  xit('should support arg object with }');
 });
