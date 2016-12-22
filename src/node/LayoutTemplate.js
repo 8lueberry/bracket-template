@@ -22,32 +22,51 @@ class LayoutTemplate {
   }) {
     // TODO: assert opts.conf
     this.conf = opts.conf;
-    this.conf.helpers = Object.assign(
-      {},
-      helpers,
-      opts.conf.helpers,
-    );
 
     const { header, deps, tmpl } = parseTemplate(this.conf, opts.tmpl);
     this.header = header;
     this.tmpl = tmpl;
     this.deps = deps;
+
+    // add helper data (partials, variables from child)
+    this.conf.helpers = Object.assign(
+      {},
+      helpers,
+      opts.conf.helpers,
+    );
   }
 
-  compile() {
+  compile(header = {}) {
     if (this.deps.hasCircular()) {
       throw new Error('Has circular dependencies');
     }
 
-    if (this.deps.hasMaster()) {
-      const masterLayoutTemplate = new LayoutTemplate({
-        conf: this.conf,
-        tmpl: layoutStore.get(this.deps.master.path),
-      });
-      return masterLayoutTemplate.compile() + this.tmpl;
+    if (!this.deps.hasMaster()) {
+      // header support
+      let layout = '';
+      Object
+        .keys(header)
+        .filter(key => key !== 'master')
+        .forEach((key) => {
+          layout += `${this.conf.keys.layout}.${key}=${JSON.stringify(header[key])};`;
+        });
+      layout = layout ? `[[ var ${this.conf.keys.layout}={};${layout} ]]` : '';
+
+      return `${layout} ${this.tmpl}`;
     }
 
-    return this.tmpl;
+    const masterLayoutTemplate = new LayoutTemplate({
+      conf: this.conf,
+      tmpl: layoutStore.get(this.deps.master.path),
+    });
+
+    const newHeader = Object.assign(
+      {},
+      this.header,
+      header,
+    );
+
+    return `${this.tmpl} ${masterLayoutTemplate.compile(newHeader)}`;
   }
 
   toString() {

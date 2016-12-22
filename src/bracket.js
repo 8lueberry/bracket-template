@@ -20,7 +20,7 @@ const settings = {
 
   // extract the argument values from a function call
   // e.g. { test1: '123', test2: 456, test3: true }, 'aaa', true, {}, ''
-  argValues: /\s*({[\s\S]*?}|[^,]+)/g,
+  argValues: /\s*({[\s\S]*?}|[^,]+)/g, // TODO: bug with , and }
 
   // The params to pass to the template function
   // For multiple params, comma delimited e.g. 'model,model2,model3...'
@@ -29,6 +29,61 @@ const settings = {
   // helper functions
   helpers: {},
 };
+
+function handleBlockCall(c, blocks) {
+  return (m, name, argStr) => {
+    // no block definition
+    if (!c.helpers[name] && !blocks[name]) {
+      return '';
+    }
+
+    // split arg string
+    const args = [];
+    argStr.replace(c.argValues, (m2, val) => {
+      args.push(val);
+    });
+
+    // call helpers
+    if (c.helpers[name]) {
+      const val = c.helpers[name](...args.map(a => Function(`return ${a};`)())); // eslint-disable-line
+      return `';out+=${JSON.stringify(val)};out+='`;
+    }
+
+    // call block def
+
+    // maps arg name and value
+    const lookup = blocks[name].args.reduce((res, k, i) => {
+      const hash = res;
+      hash[k] = args.length <= i ? undefined : args[i];
+      return hash;
+    }, {});
+
+    const blockStr = blocks[name].body
+      // replace block def with arg values
+      .replace(c.interpolate, (m2, codeVal) => {
+        const code = codeVal.trim();
+
+        // support obj.arg
+        const key = code.split('.')[0];
+
+        // key not found then leave it as is
+        if (!(key in lookup)) {
+          return m2;
+        }
+
+        // Generate the value by making a scoped function
+        // e.g. function() { var arg = { test1: '123' }; return arg.test1; }
+        const valStr = `var ${key}=${lookup[key]};return ${code};`;
+        const val = Function(valStr)(); // eslint-disable-line
+
+        return `';out+=${JSON.stringify(val)};out+='`;
+      })
+      // recursive handle block call
+      .replace(c.block, handleBlockCall(c, blocks));
+
+    return blockStr;
+  };
+}
 
 /**
  * Compile creates a template function
@@ -52,55 +107,7 @@ function compile(tmpl, conf) {
     })
 
     // handle block call
-    .replace(c.block, (m, name, argStr) => {
-      // no block definition
-      if (!c.helpers[name] && !blocks[name]) {
-        return '';
-      }
-
-      // split arg string
-      const args = [];
-      argStr.replace(c.argValues, (m2, val) => {
-        args.push(val);
-      });
-
-      // call helpers
-      if (c.helpers[name]) {
-        const val = c.helpers[name](...args.map(a => Function(`return ${a};`)())); // eslint-disable-line
-        return `';out+=${JSON.stringify(val)};out+='`;
-      }
-
-      // call block def
-
-      // maps arg name and value
-      const lookup = blocks[name].args.reduce((res, k, i) => {
-        const hash = res;
-        hash[k] = args.length <= i ? undefined : args[i];
-        return hash;
-      }, {});
-
-      // replace block def with arg values
-      const blockStr = blocks[name].body.replace(c.interpolate, (m2, codeVal) => {
-        const code = codeVal.trim();
-
-        // support obj.arg
-        const key = code.split('.')[0];
-
-        // key not found then leave it as is
-        if (!(key in lookup)) {
-          return m2;
-        }
-
-        // Generate the value by making a scoped function
-        // e.g. function() { var arg = { test1: '123' }; return arg.test1; }
-        const valStr = `var ${key}=${lookup[key]};return ${code};`;
-        const val = Function(valStr)(); // eslint-disable-line
-
-        return `';out+=${JSON.stringify(val)};out+='`;
-      });
-
-      return blockStr;
-    })
+    .replace(c.block, handleBlockCall(c, blocks))
 
     // convert models
     .replace(c.interpolate, (m, code) => `';out+=${code.trim()};out+='`)

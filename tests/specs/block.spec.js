@@ -79,4 +79,17 @@ test2-[[= arg ]]
     const result = template();
     expect(result).toAlmostEqual('tmpl-test1-test1-test2-test2\n');
   });
+
+
+  it('should support calling blocks in blocks', () => {
+    const template = bracket.compile(
+      `tmpl-[[# block1('test1') ]]
+[[## block1(arg)
+block1-[[= arg ]]-[[# block2('test2') ]]
+#]][[## block2(arg)
+block2-[[= arg ]]
+#]]`);
+    const result = template();
+    expect(result).toAlmostEqual('tmpl-block1-test1-block2-test2\n');
+  });
 });

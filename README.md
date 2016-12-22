@@ -131,8 +131,8 @@ title: Index page
   </head>
   <body>
     Hello from master.dot <br />
-    [[= layout.body ]] <br />
-    [[= layout.body2 ]]
+    [[# body() ]] <br />
+    [[# body2() ]]
   </body>
 </html>
 ```
@@ -234,3 +234,5 @@ const settings = {
   varname: 'model',
 };
 ```
+
+**Pro tip** If you want to pass more than one model, change the varname to 'model, model2' and your template function will accept 2 models.

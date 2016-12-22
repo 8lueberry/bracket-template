@@ -19,7 +19,8 @@ const settings = {
 
   // header keys
   keys: {
-    master: 'master',
+    master: 'master', // header master key
+    layout: 'layout', // header ref name
   },
 
   // root path for views
@@ -49,7 +50,7 @@ function compile(tmpl, conf) {
 
   return bracket.compile(
     template.compile(),
-    c,
+    template.conf,
   );
 }
 
