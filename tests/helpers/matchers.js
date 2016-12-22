@@ -32,7 +32,7 @@ function addDataTableSupport() {
   function executeTest(name, fn, entries, override) {
     entries.forEach((entry) => {
       const itName = `${name} ${entry.name}`;
-      const itFn = async () => await fn(...entry.params);
+      const itFn = () => fn(...entry.params);
       (override || entry.proxy)(itName, itFn);
     });
   }
