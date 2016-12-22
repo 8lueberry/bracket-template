@@ -54,11 +54,12 @@ function handleBlockCall(c, blocks) {
     // maps arg name and value
     const lookup = blocks[name].args.reduce((res, k, i) => {
       const hash = res;
-      hash[k] = args.length <= i ? undefined : args[i];
+      hash[k] = args.length <= i ? undefined : args[i].replace(/\\'/g, '\''); // fix the replacement of ' to \'
       return hash;
     }, {});
 
     const blockStr = blocks[name].body
+      .replace(/'/g, '\\\'') // allow the use of ' in the body
       // replace block def with arg values
       .replace(c.interpolate, (m2, codeVal) => {
         const code = codeVal.trim();

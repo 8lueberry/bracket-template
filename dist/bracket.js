@@ -193,11 +193,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // maps arg name and value
 	    var lookup = blocks[name].args.reduce(function (res, k, i) {
 	      var hash = res;
-	      hash[k] = args.length <= i ? undefined : args[i];
+	      hash[k] = args.length <= i ? undefined : args[i].replace(/\\'/g, '\''); // fix the replacement of ' to \'
 	      return hash;
 	    }, {});
 
-	    var blockStr = blocks[name].body
+	    var blockStr = blocks[name].body.replace(/'/g, '\\\'') // allow the use of ' in the body
 	    // replace block def with arg values
 	    .replace(c.interpolate, function (m2, codeVal) {
 	      var code = codeVal.trim();
@@ -270,7 +270,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// The object to export
 	var res = {
-	  version:  false ? 'test' : ("1.1.1"), // read from package.json
+	  version:  false ? 'test' : ("1.1.2"), // read from package.json
 	  settings: settings,
 	  compile: compile
 	};

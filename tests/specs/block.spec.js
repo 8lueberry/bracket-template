@@ -80,18 +80,45 @@ test2-[[= arg ]]
     expect(result).toAlmostEqual('tmpl-test1-test1-test2-test2');
   });
 
-
   it('should support calling blocks in blocks', () => {
     const template = bracket.compile(
-      `tmpl-[[# block1('test1') ]]
-[[## block1(arg)
-block1-[[= arg ]]-[[# block2('test2') ]]
-#]][[## block2(arg)
-block2-[[= arg ]]
+      `tmpl-[[# block1() ]]
+[[## block1()
+block1-[[# block2() ]]
+#]][[## block2()
+block2
 #]]`);
     const result = template();
-    expect(result).toAlmostEqual('tmpl-block1-test1-block2-test2');
+    expect(result).toAlmostEqual('tmpl-block1-block2');
   });
+
+  describeTable('should support special characters in body',
+    (arg, resultString) => {
+      const template = bracket.compile(`tmpl-[[# block1() ]]
+[[## block1()
+${arg}
+#]]`);
+      const result = template();
+      expect(result).toAlmostEqual(resultString);
+    },
+    entry('should support \'', '\'test\'', 'tmpl-\'test\''),
+    entry('should support "', '"test"', 'tmpl-"test"') // eslint-disable-line
+  );
+
+  describeTable('should support special characters arg',
+    (arg, resultString) => {
+      const template = bracket.compile(`tmpl-[[# block1() ]]
+[[## block1()
+block1-[[# block2(${arg}) ]]
+#]][[## block2(arg1)
+block2-[[= arg1 ]]
+#]]`);
+      const result = template();
+      expect(result).toAlmostEqual(resultString);
+    },
+    entry('should support \'', '\'test\'', 'tmpl-block1-block2-test'),
+    entry('should support "', '"test"', 'tmpl-block1-block2-test') // eslint-disable-line
+  );
 
   xit('should support arg with ,');
   xit('should support arg object with }');
