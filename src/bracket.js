@@ -45,7 +45,7 @@ function handleBlockCall(c, blocks) {
 
     // call helpers
     if (c.helpers[name]) {
-      const val = c.helpers[name](...args.map(a => Function(`return ${a};`)())); // eslint-disable-line
+      const val = c.helpers[name](...args.map(a => Function(`return ${jsValue(a)};`)())); // eslint-disable-line
       return `';out+=${JSON.stringify(val)};out+='`;
     }
 
@@ -54,12 +54,11 @@ function handleBlockCall(c, blocks) {
     // maps arg name and value
     const lookup = blocks[name].args.reduce((res, k, i) => {
       const hash = res;
-      hash[k] = args.length <= i ? undefined : args[i].replace(/\\'/g, '\''); // fix the replacement of ' to \'
+      hash[k] = args.length <= i ? undefined : jsValue(args[i]); // fix the replacement of ' to \'
       return hash;
     }, {});
 
     const blockStr = blocks[name].body
-      .replace(/'/g, '\\\'') // allow the use of ' in the body
       // replace block def with arg values
       .replace(c.interpolate, (m2, codeVal) => {
         const code = codeVal.trim();
@@ -98,6 +97,9 @@ function compile(tmpl, conf) {
   const blocks = {};
 
   str = str
+    // allow the use of ' in the body
+    .replace(/'/g, '\\\'')
+
     // handle block def
     .replace(c.blockDef, (m, name, argStr, body) => {
       blocks[name] = {
@@ -111,10 +113,10 @@ function compile(tmpl, conf) {
     .replace(c.block, handleBlockCall(c, blocks))
 
     // convert models
-    .replace(c.interpolate, (m, code) => `';out+=${code.trim()};out+='`)
+    .replace(c.interpolate, (m, code) => `';out+=${jsValue(code)};out+='`)
 
     // raw js
-    .replace(c.evaluate, (m, code) => `';${code.trim()}out+='`);
+    .replace(c.evaluate, (m, code) => `';${jsValue(code)}out+='`);
 
   // build the template function body
   str = `var out='${str}';return out;`
@@ -126,6 +128,15 @@ function compile(tmpl, conf) {
     .replace(/\+''/g, '');
 
   return new Function(c.varname, str); // eslint-disable-line
+}
+
+/**
+ * Helper for JS value
+ */
+function jsValue(val) {
+  return val
+    .trim()
+    .replace(/\\'/g, '\''); // fix the replacement of ' to \'
 }
 
 // The object to export
