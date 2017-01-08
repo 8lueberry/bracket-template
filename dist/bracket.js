@@ -183,7 +183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _c$helpers;
 
 	      var val = (_c$helpers = c.helpers)[name].apply(_c$helpers, _toConsumableArray(args.map(function (a) {
-	        return Function('return ' + a + ';')();
+	        return Function('return ' + jsValue(a) + ';')();
 	      }))); // eslint-disable-line
 	      return '\';out+=' + JSON.stringify(val) + ';out+=\'';
 	    }
@@ -193,11 +193,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // maps arg name and value
 	    var lookup = blocks[name].args.reduce(function (res, k, i) {
 	      var hash = res;
-	      hash[k] = args.length <= i ? undefined : args[i].replace(/\\'/g, '\''); // fix the replacement of ' to \'
+	      hash[k] = args.length <= i ? undefined : jsValue(args[i]); // fix the replacement of ' to \'
 	      return hash;
 	    }, {});
 
-	    var blockStr = blocks[name].body.replace(/'/g, '\\\'') // allow the use of ' in the body
+	    var blockStr = blocks[name].body
 	    // replace block def with arg values
 	    .replace(c.interpolate, function (m2, codeVal) {
 	      var code = codeVal.trim();
@@ -236,6 +236,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var blocks = {};
 
 	  str = str
+	  // allow the use of ' in the body
+	  .replace(/'/g, '\\\'')
+
 	  // handle block def
 	  .replace(c.blockDef, function (m, name, argStr, body) {
 	    blocks[name] = {
@@ -252,12 +255,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // convert models
 	  .replace(c.interpolate, function (m, code) {
-	    return '\';out+=' + code.trim() + ';out+=\'';
+	    return '\';out+=' + jsValue(code) + ';out+=\'';
 	  })
 
 	  // raw js
 	  .replace(c.evaluate, function (m, code) {
-	    return '\';' + code.trim() + 'out+=\'';
+	    return '\';' + jsValue(code) + 'out+=\'';
 	  });
 
 	  // build the template function body
@@ -268,9 +271,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return new Function(c.varname, str); // eslint-disable-line
 	}
 
+	/**
+	 * Helper for JS value
+	 */
+	function jsValue(val) {
+	  return val.trim().replace(/\\'/g, '\''); // fix the replacement of ' to \'
+	}
+
 	// The object to export
 	var res = {
-	  version:  false ? 'test' : ("1.1.2"), // read from package.json
+	  version:  false ? 'test' : ("1.1.3"), // read from package.json
 	  settings: settings,
 	  compile: compile
 	};
