@@ -50,9 +50,9 @@ class LayoutTemplate {
         .forEach((key) => {
           layout += `${this.conf.keys.layout}.${key}=${JSON.stringify(header[key])};`;
         });
-      layout = layout ? `[[ var ${this.conf.keys.layout}={};${layout} ]]` : '';
+      layout = layout ? `[[ var ${this.conf.keys.layout}={};${layout} ]] ` : '';
 
-      return `${layout} ${this.tmpl}`;
+      return `${layout}${this.tmpl}`;
     }
 
     const masterLayoutTemplate = new LayoutTemplate({
