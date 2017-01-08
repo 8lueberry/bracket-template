@@ -17,6 +17,10 @@
 
 `$ npm i bracket-template`
 
+or 
+
+`$ yarn add bracket-template`
+
 Or, fork on [github](https://github.com/danlevan/bracket-template)
 
 ## Express
@@ -35,7 +39,7 @@ If you want to use bracket in your node project for building your email template
 
 Bracket works great with modern browsers. The tests are run on the latest chrome browser (more browser tests to come).
 
-[example](examples)
+[example](examples/browser)
 
 ## Language definition
 
