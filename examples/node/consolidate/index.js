@@ -1,5 +1,4 @@
-var cons = require('../../../../consolidate.js');
-// var cons = require('consolidate');
+var cons = require('consolidate');
 var express = require('express');
 var path = require('path');
 
