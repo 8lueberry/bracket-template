@@ -61,7 +61,7 @@ const nodeConfig = {
   output: {
     libraryTarget: 'umd',
     path: path.resolve(__dirname, '../dist'),
-    filename: 'bracket.js',
+    filename: 'node.js',
   },
   module: {
     loaders: [{

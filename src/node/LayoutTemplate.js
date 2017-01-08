@@ -1,27 +1,20 @@
-import * as yaml from 'js-yaml';
-import * as path from 'path';
+import path from 'path';
+import yaml from 'js-yaml';
+
 import LayoutHelper from './LayoutHelper';
 import LayoutDependency from './LayoutDependency';
-import TemplateStore from './TemplateStore';
 
-// map for caching dependency files (raw file)
-const layoutStore = new TemplateStore();
-const layoutHelper = new LayoutHelper({
-  store: layoutStore,
-});
+// helper for layout (partial, store...)
+const layoutHelper = new LayoutHelper();
 
-// default helpers
-const helpers = {
-  partial: (...args) => layoutHelper.partial(...args),
-};
-
-class LayoutTemplate {
+export default class LayoutTemplate {
   constructor(opts = {
     conf: {},
     tmpl: '',
   }) {
-    // TODO: assert opts.conf
-    this.conf = opts.conf;
+    this.conf = initConfig(opts.conf);
+
+    layoutHelper.enableCache(!this.conf.settings || !!this.conf.settings['view cache']);
 
     const { header, deps, tmpl } = parseTemplate(this.conf, opts.tmpl);
     this.header = header;
@@ -30,8 +23,9 @@ class LayoutTemplate {
 
     // add helper data (partials, variables from child)
     this.conf.helpers = Object.assign(
-      {},
-      helpers,
+      {
+        partial: (...args) => layoutHelper.partial(...args),
+      },
       opts.conf.helpers,
     );
   }
@@ -56,8 +50,14 @@ class LayoutTemplate {
     }
 
     const masterLayoutTemplate = new LayoutTemplate({
-      conf: this.conf,
-      tmpl: layoutStore.get(this.deps.master.path),
+      conf: Object.assign(
+        {},
+        this.conf,
+        {
+          filename: this.deps.master.path,
+        },
+      ),
+      tmpl: layoutHelper.store.get(this.deps.master.path),
     });
 
     const newHeader = Object.assign(
@@ -75,6 +75,18 @@ class LayoutTemplate {
   partials: ${this.deps.partials.map(d => d.path)}
     `;
   }
+}
+
+/**
+ * Initialize the config
+ * @param {object} conf - The configuration
+ */
+function initConfig(conf) {
+  const result = Object.assign({}, conf);
+  if (conf.filename) {
+    result.filepath = path.dirname(conf.filename);
+  }
+  return result;
 }
 
 /**
@@ -96,13 +108,13 @@ function parseTemplate(conf, tmpl) {
   const masterPath = header[conf.keys.master];
   if (masterPath) {
     deps.master = {
-      path: path.resolve(conf.path, header[conf.keys.master]),
+      path: lookupFile(conf, header[conf.keys.master]),
     };
   }
 
   // replace partial call's relative path to full path
   cleanTmpl = cleanTmpl.replace(conf.partial, (m, partialPath) => {
-    const fullPath = path.resolve(conf.path, partialPath);
+    const fullPath = lookupFile(conf, partialPath);
     deps.partials.set(
       partialPath,
       {
@@ -119,4 +131,34 @@ function parseTemplate(conf, tmpl) {
   };
 }
 
-export default LayoutTemplate;
+/**
+ * Lookup files for express from
+ *  - relative to current file
+ *  - relative to views
+ * @param {object} conf - The configuration
+ * @param {string} fileRelative - The relative path of the file
+ */
+function lookupFile(conf, fileRelative) {
+  const relativeToFile = path.resolve(conf.filepath, fileRelative);
+  if (layoutHelper.store.exist(relativeToFile)) {
+    return relativeToFile;
+  }
+
+  if (conf.settings && conf.settings.views) {
+    if (!Array.isArray(conf.settings.views)) {
+      const fromView = path.resolve(conf.settings.views, fileRelative);
+      if (layoutHelper.store.exist(fromView)) {
+        return fromView;
+      }
+    }
+
+    for (let i = 0; i < conf.settings.views.length; i += 1) {
+      const fromView = path.resolve(conf.settings.views[i], fileRelative);
+      if (layoutHelper.store.exist(fromView)) {
+        return fromView;
+      }
+    }
+  }
+
+  return relativeToFile;
+}

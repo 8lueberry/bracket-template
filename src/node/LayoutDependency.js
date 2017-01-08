@@ -1,4 +1,4 @@
-class LayoutDependency {
+export default class LayoutDependency {
   constructor() {
     this.master = null;
     this.partials = new Map();
@@ -31,5 +31,3 @@ class LayoutDependency {
     );
   }
 }
-
-export default LayoutDependency;

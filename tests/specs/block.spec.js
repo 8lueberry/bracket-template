@@ -120,6 +120,14 @@ block2-[[= arg1 ]]
     entry('should support "', '"test"', 'tmpl-block1-block2-test') // eslint-disable-line
   );
 
+  it('should support empty block', () => {
+    const template = bracket.compile(`tmpl-[[# block1() ]]
+[[## block1()
+#]]`);
+    const result = template();
+    expect(result).toAlmostEqual('tmpl-');
+  });
+
   xit('should support arg with ,');
   xit('should support arg object with }');
 });
