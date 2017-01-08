@@ -102,26 +102,26 @@ When used in node, you can define a master layout and include partial files.
 
 Layout declarations are done in [yaml](http://yaml.org) at the beginning of the template file.
 
-**index.dot**
+**index.brkt.html**
 
 ```html
 ---
-master: master.dot
+master: master.brkt.html
 title: Index page
 ---
 
-<!-- Define blocks used in master.dot -->
+<!-- Define blocks used in master.brkt.html -->
 
 [[## body()
-  Hello from index.dot
+  Hello from index.brkt.html
 #]]
 
 [[## body2()
-  Hello from index.dot again
+  Hello from index.brkt.html again
 #]]
 ```
 
-**master.dot**
+**master.brkt.html**
 
 ```html
 <!doctype html>
@@ -130,7 +130,7 @@ title: Index page
     <title>[[= layout.title || 'default title' ]]</title>
   </head>
   <body>
-    Hello from master.dot <br />
+    Hello from master.brkt.html <br />
     [[# body() ]] <br />
     [[# body2() ]]
   </body>
@@ -146,12 +146,16 @@ title: Index page
     <title>Index page</title>
   </head>
   <body>
-    Hello from master.dot <br />
-    Hello from index.dot <br />
-    Hello from index.dot again
+    Hello from master.brkt.html <br />
+    Hello from index.brkt.html <br />
+    Hello from index.brkt.html again
   </body>
 </html>
 ```
+
+The master file specified can be
+- relative to the current file `../_layout/master.brkt.html`
+- relative to the views set in express `app.set('views', path.resolve(__dirname, 'views'));`
 
 **Pro tip**
 - Custom variables can be defined in the yaml (like title in the example) and used in the master.
@@ -161,7 +165,7 @@ title: Index page
 
 You can include another file in your template file.
 
-**index.dot**
+**index.brkt.html**
 
 ```html
 <!doctype html>
@@ -170,12 +174,12 @@ You can include another file in your template file.
     <title>Example</title>
   </head>
   <body>
-    [[## partial('header.dot', { current: 'contact' }) ]]
+    [[# partial('header.brkt.html', { current: 'contact' }) ]]
   </body>
 </html>
 ```
 
-**header.dot**
+**header.brkt.html**
 
 ```html
 <nav>
