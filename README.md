@@ -23,13 +23,13 @@ Or, fork on [github](https://github.com/danlevan/bracket-template)
 
 If you want to use bracket with express, it's recommended to use [consolidate.js](https://www.npmjs.com/package/consolidate) as it makes is easy to change engine and implements a cache.
 
-[example](examples/node/consolidate.js)
+[example](examples/node/consolidate)
 
 ## Node (API)
 
 If you want to use bracket in your node project for building your email templates for example, you can use it directly. (For Express, it's recommended to use [consolidate.js](https://www.npmjs.com/package/consolidate))
 
-[example](examples/node/simple.js)
+[example](examples/node/simple)
 
 ## Browser
 
