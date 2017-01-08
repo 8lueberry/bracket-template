@@ -1,8 +1,9 @@
-var cons = require('consolidate');
+var cons = require('../../../../consolidate.js');
+// var cons = require('consolidate');
 var express = require('express');
 var path = require('path');
 
-cons.requires.bracket = require('../../../dist/bracket'); // can be omitted in your code
+cons.requires.bracket = require('../../../dist/node'); // can be omitted in your code
 
 var app = express();
 

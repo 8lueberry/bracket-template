@@ -1,4 +1,4 @@
-var bracket = require('../../dist/bracket').default; // require('bracket-template').default;
+var bracket = require('../../dist/node').default; // require('bracket-template').default;
 var express = require('express');
 
 // good practice to call compile() once and cache the template function for reuse

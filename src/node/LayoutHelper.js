@@ -1,11 +1,13 @@
 import bracket from '../bracket';
+import CacheStore from './stores/CacheStore';
+import DiskStore from './stores/DiskStore';
 
-class LayoutHelper {
-  constructor({ store }) {
-    if (!store) {
-      throw new Error('Expected a store to be provided');
-    }
-    this.store = store;
+const cacheStore = new CacheStore();
+const diskStore = new DiskStore();
+
+export default class LayoutHelper {
+  constructor() {
+    this.store = cacheStore;
   }
 
   /**
@@ -17,6 +19,11 @@ class LayoutHelper {
     const result = template(partialModel);
     return result;
   }
-}
 
-export default LayoutHelper;
+  /**
+   * Enables or disables the cache
+   */
+  enableCache(enable) {
+    this.store = enable ? cacheStore : diskStore;
+  }
+}
