@@ -1,19 +1,44 @@
-import * as yaml from 'js-yaml';
-import * as path from 'path';
+import path from 'path';
+import yaml from 'js-yaml';
+
 import LayoutHelper from './LayoutHelper';
 import LayoutDependency from './LayoutDependency';
 import TemplateStore from './TemplateStore';
 
 // map for caching dependency files (raw file)
-const layoutStore = new TemplateStore();
 const layoutHelper = new LayoutHelper({
-  store: layoutStore,
+  store: new TemplateStore(),
 });
 
 // default helpers
 const helpers = {
   partial: (...args) => layoutHelper.partial(...args),
 };
+
+function lookupFile(conf, fileRelative) {
+  const relativeToFile = path.resolve(conf.filepath, fileRelative);
+  if (layoutHelper.store.exist(relativeToFile)) {
+    return relativeToFile;
+  }
+
+  if (conf.settings && conf.settings.views) {
+    if (!Array.isArray(conf.settings.views)) {
+      const fromView = path.resolve(conf.settings.views, fileRelative);
+      if (layoutHelper.store.exist(fromView)) {
+        return fromView;
+      }
+    }
+
+    for (let i = 0; i < conf.settings.views.length; i += 1) {
+      const fromView = path.resolve(conf.settings.views[i], fileRelative);
+      if (layoutHelper.store.exist(fromView)) {
+        return fromView;
+      }
+    }
+  }
+
+  return relativeToFile;
+}
 
 class LayoutTemplate {
   constructor(opts = {
@@ -22,6 +47,11 @@ class LayoutTemplate {
   }) {
     // TODO: assert opts.conf
     this.conf = opts.conf;
+
+    // TODO: should be done in LayoutTemplate
+    if (this.conf.filename) {
+      this.conf.filepath = path.dirname(this.conf.filename);
+    }
 
     const { header, deps, tmpl } = parseTemplate(this.conf, opts.tmpl);
     this.header = header;
@@ -56,8 +86,14 @@ class LayoutTemplate {
     }
 
     const masterLayoutTemplate = new LayoutTemplate({
-      conf: this.conf,
-      tmpl: layoutStore.get(this.deps.master.path),
+      conf: Object.assign(
+        {},
+        this.conf,
+        {
+          filename: this.deps.master.path,
+        },
+      ),
+      tmpl: layoutHelper.store.get(this.deps.master.path),
     });
 
     const newHeader = Object.assign(
@@ -96,13 +132,13 @@ function parseTemplate(conf, tmpl) {
   const masterPath = header[conf.keys.master];
   if (masterPath) {
     deps.master = {
-      path: path.resolve(conf.path, header[conf.keys.master]),
+      path: lookupFile(conf, header[conf.keys.master]),
     };
   }
 
   // replace partial call's relative path to full path
   cleanTmpl = cleanTmpl.replace(conf.partial, (m, partialPath) => {
-    const fullPath = path.resolve(conf.path, partialPath);
+    const fullPath = lookupFile(conf, partialPath);
     deps.partials.set(
       partialPath,
       {

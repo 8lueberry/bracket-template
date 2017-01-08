@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 
 class TemplateStore {
   constructor() {
@@ -16,6 +16,14 @@ class TemplateStore {
     this.readCache.set(filepath, clean);
 
     return clean;
+  }
+
+  has(filepath) {
+    return this.readCache.has(filepath);
+  }
+
+  exist(filepath) {
+    return this.has(filepath) || fs.existsSync(filepath);
   }
 }
 
