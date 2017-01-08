@@ -16,7 +16,7 @@ const settings = {
   block: /\[\[#\s*([\w]+)\(([\s\S]*?)\)\s*]]/g,
 
   // Extract any block definition [[## block1(arg) #]]
-  blockDef: /\[\[##\s*([\w]+)\(([\s\w,]*)\)\s*[\n]([\s\S]*?)\n\s*#]]/g,
+  blockDef: /\[\[##\s*([\w]+)\(([\s\w,]*)\)\s*[\n]([\s\S]*?)\s*#]]/g,
 
   // extract the argument values from a function call
   // e.g. { test1: '123', test2: 456, test3: true }, 'aaa', true, {}, ''

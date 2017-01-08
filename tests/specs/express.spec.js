@@ -26,7 +26,7 @@ master: ../fixtures/master.brkt.html
   it('should resolve master from filename', () => {
     const template = bracket.compile(
       `---
-master: ../fixtures/master2-rel.brkt.html
+master: ../fixtures/master2.brkt.html
 ---
 [[## body2()
   tmpl-child
