@@ -21,7 +21,9 @@ or
 
 `$ yarn add bracket-template`
 
-Or, fork on [github](https://github.com/danlevan/bracket-template)
+or
+
+fork on [github](https://github.com/danlevan/bracket-template)
 
 ## Express
 
