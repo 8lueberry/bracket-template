@@ -6,12 +6,7 @@ expect bracket
 
 describe('Partials', () => {
   it('should accept partials', () => {
-    const template = bracket.compile(
-      'tmpl-test [[# partial(\'../fixtures/partial.brkt.html\') ]]',
-      {
-        path: __dirname,
-      },
-    );
+    const template = bracket.compile('tmpl-test [[# partial(\'tests/fixtures/partial.brkt.html\') ]]');
     const result = template();
     expect(result).toAlmostEqual('tmpl-test tmpl-partial');
   });
@@ -19,15 +14,11 @@ describe('Partials', () => {
   it('should accept partials within layout', () => {
     const template = bracket.compile(
       `---
-master: ../fixtures/master.brkt.html
+master: tests/fixtures/master.brkt.html
 ---
 [[## body1()
-  [[# partial('../fixtures/partial.brkt.html') ]]
-#]]`,
-      {
-        path: __dirname,
-      },
-    );
+  [[# partial('tests/fixtures/partial.brkt.html') ]]
+#]]`);
     const result = template();
     expect(result).toAlmostEqual('tmpl-master tmpl-partial');
   });
@@ -35,7 +26,7 @@ master: ../fixtures/master.brkt.html
   describeTable('passing models',
     (arg, resultString) => {
       const template = bracket.compile(
-        `tmpl-test [[# partial('../fixtures/partial-arg.brkt.html', ${arg}) ]]`,
+        `tmpl-test [[# partial('tests/fixtures/partial-arg.brkt.html', ${arg}) ]]`,
         {
           path: __dirname,
         },

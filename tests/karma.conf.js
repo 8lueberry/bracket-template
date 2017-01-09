@@ -26,6 +26,7 @@ module.exports = (config) => {
     exclude: [
       'tests/specs/layout.spec.js',
       'tests/specs/partial.spec.js',
+      'tests/specs/express.spec.js',
     ],
 
 

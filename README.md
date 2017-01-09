@@ -17,25 +17,31 @@
 
 `$ npm i bracket-template`
 
-Or, fork on [github](https://github.com/danlevan/bracket-template)
+or 
+
+`$ yarn add bracket-template`
+
+or
+
+fork on [github](https://github.com/danlevan/bracket-template)
 
 ## Express
 
 If you want to use bracket with express, it's recommended to use [consolidate.js](https://www.npmjs.com/package/consolidate) as it makes is easy to change engine and implements a cache.
 
-[example](examples/node/consolidate.js)
+[example](examples/node/consolidate)
 
 ## Node (API)
 
 If you want to use bracket in your node project for building your email templates for example, you can use it directly. (For Express, it's recommended to use [consolidate.js](https://www.npmjs.com/package/consolidate))
 
-[example](examples/node/simple.js)
+[example](examples/node/simple)
 
 ## Browser
 
 Bracket works great with modern browsers. The tests are run on the latest chrome browser (more browser tests to come).
 
-[example](examples)
+[example](examples/browser)
 
 ## Language definition
 
@@ -102,26 +108,26 @@ When used in node, you can define a master layout and include partial files.
 
 Layout declarations are done in [yaml](http://yaml.org) at the beginning of the template file.
 
-**index.dot**
+**index.brkt.html**
 
 ```html
 ---
-master: master.dot
+master: master.brkt.html
 title: Index page
 ---
 
-<!-- Define blocks used in master.dot -->
+<!-- Define blocks used in master.brkt.html -->
 
 [[## body()
-  Hello from index.dot
+  Hello from index.brkt.html
 #]]
 
 [[## body2()
-  Hello from index.dot again
+  Hello from index.brkt.html again
 #]]
 ```
 
-**master.dot**
+**master.brkt.html**
 
 ```html
 <!doctype html>
@@ -130,7 +136,7 @@ title: Index page
     <title>[[= layout.title || 'default title' ]]</title>
   </head>
   <body>
-    Hello from master.dot <br />
+    Hello from master.brkt.html <br />
     [[# body() ]] <br />
     [[# body2() ]]
   </body>
@@ -146,12 +152,16 @@ title: Index page
     <title>Index page</title>
   </head>
   <body>
-    Hello from master.dot <br />
-    Hello from index.dot <br />
-    Hello from index.dot again
+    Hello from master.brkt.html <br />
+    Hello from index.brkt.html <br />
+    Hello from index.brkt.html again
   </body>
 </html>
 ```
+
+The master file specified can be
+- relative to the current file `../_layout/master.brkt.html`
+- relative to the views set in express `app.set('views', path.resolve(__dirname, 'views'));`
 
 **Pro tip**
 - Custom variables can be defined in the yaml (like title in the example) and used in the master.
@@ -161,7 +171,7 @@ title: Index page
 
 You can include another file in your template file.
 
-**index.dot**
+**index.brkt.html**
 
 ```html
 <!doctype html>
@@ -170,12 +180,12 @@ You can include another file in your template file.
     <title>Example</title>
   </head>
   <body>
-    [[## partial('header.dot', { current: 'contact' }) ]]
+    [[# partial('header.brkt.html', { current: 'contact' }) ]]
   </body>
 </html>
 ```
 
-**header.dot**
+**header.brkt.html**
 
 ```html
 <nav>
@@ -223,7 +233,7 @@ const settings = {
   block: /\[\[#\s*([\w]+)\(([\s\S]*?)\)\s*]]/g,
 
   // Extract any block definition [[## block1(arg) #]]
-  blockDef: /\[\[##\s*([\w]+)\(([\s\w,]*)\)\s*[\n]([\s\S]*?)\n\s*#]]/g,
+  blockDef: /\[\[##\s*([\w]+)\(([\s\w,]*)\)\s*[\n]([\s\S]*?)\s*#]]/g,
 
   // extract the argument values from a function call
   // e.g. { test1: '123', test2: 456, test3: true }, 'aaa', true, {}, ''

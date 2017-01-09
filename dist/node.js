@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory((function webpackLoadOptionalExternalModule() { try { return require("buffer"); } catch(e) {} }()), require("path"), require("fs"));
+		module.exports = factory(require("path"), (function webpackLoadOptionalExternalModule() { try { return require("buffer"); } catch(e) {} }()), require("fs"));
 	else if(typeof define === 'function' && define.amd)
-		define(["buffer", "path", "fs"], factory);
+		define(["path", "buffer", "fs"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory((function webpackLoadOptionalExternalModule() { try { return require("buffer"); } catch(e) {} }()), require("path"), require("fs")) : factory(root["buffer"], root["path"], root["fs"]);
+		var a = typeof exports === 'object' ? factory(require("path"), (function webpackLoadOptionalExternalModule() { try { return require("buffer"); } catch(e) {} }()), require("fs")) : factory(root["path"], root["buffer"], root["fs"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_25__, __WEBPACK_EXTERNAL_MODULE_35__, __WEBPACK_EXTERNAL_MODULE_39__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_26__, __WEBPACK_EXTERNAL_MODULE_39__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -91,8 +91,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    master: 'master', // header master key
 	    layout: 'layout' },
 
-	  // root path for views
-	  path: process.cwd(),
+	  // filepath
+	  filepath: process.cwd(),
 
 	  // helper methods
 	  helpers: {}
@@ -151,7 +151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  block: /\[\[#\s*([\w]+)\(([\s\S]*?)\)\s*]]/g,
 
 	  // Extract any block definition [[## block1(arg) #]]
-	  blockDef: /\[\[##\s*([\w]+)\(([\s\w,]*)\)\s*[\n]([\s\S]*?)\n\s*#]]/g,
+	  blockDef: /\[\[##\s*([\w]+)\(([\s\w,]*)\)\s*[\n]([\s\S]*?)\s*#]]/g,
 
 	  // extract the argument values from a function call
 	  // e.g. { test1: '123', test2: 456, test3: true }, 'aaa', true, {}, ''
@@ -280,7 +280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// The object to export
 	var res = {
-	  version:  false ? 'test' : ("1.1.3"), // read from package.json
+	  version:  false ? 'test' : ("1.1.5"), // read from package.json
 	  settings: settings,
 	  compile: compile
 	};
@@ -304,44 +304,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _jsYaml = __webpack_require__(3);
+	var _path = __webpack_require__(3);
 
-	var yaml = _interopRequireWildcard(_jsYaml);
+	var _path2 = _interopRequireDefault(_path);
 
-	var _path = __webpack_require__(35);
+	var _jsYaml = __webpack_require__(4);
 
-	var path = _interopRequireWildcard(_path);
+	var _jsYaml2 = _interopRequireDefault(_jsYaml);
 
 	var _LayoutHelper = __webpack_require__(36);
 
 	var _LayoutHelper2 = _interopRequireDefault(_LayoutHelper);
 
-	var _LayoutDependency = __webpack_require__(37);
+	var _LayoutDependency = __webpack_require__(40);
 
 	var _LayoutDependency2 = _interopRequireDefault(_LayoutDependency);
 
-	var _TemplateStore = __webpack_require__(38);
-
-	var _TemplateStore2 = _interopRequireDefault(_TemplateStore);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	// map for caching dependency files (raw file)
-	var layoutStore = new _TemplateStore2.default();
-	var layoutHelper = new _LayoutHelper2.default({
-	  store: layoutStore
-	});
-
-	// default helpers
-	var helpers = {
-	  partial: function partial() {
-	    return layoutHelper.partial.apply(layoutHelper, arguments);
-	  }
-	};
+	// helper for layout (partial, store...)
+	var layoutHelper = new _LayoutHelper2.default();
 
 	var LayoutTemplate = function () {
 	  function LayoutTemplate() {
@@ -352,8 +336,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _classCallCheck(this, LayoutTemplate);
 
-	    // TODO: assert opts.conf
-	    this.conf = opts.conf;
+	    this.conf = initConfig(opts.conf);
+
+	    layoutHelper.enableCache(!this.conf.settings || !!this.conf.settings['view cache']);
 
 	    var _parseTemplate = parseTemplate(this.conf, opts.tmpl),
 	        header = _parseTemplate.header,
@@ -365,7 +350,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.deps = deps;
 
 	    // add helper data (partials, variables from child)
-	    this.conf.helpers = Object.assign({}, helpers, opts.conf.helpers);
+	    this.conf.helpers = Object.assign({
+	      partial: function partial() {
+	        return layoutHelper.partial.apply(layoutHelper, arguments);
+	      }
+	    }, opts.conf.helpers);
 	  }
 
 	  _createClass(LayoutTemplate, [{
@@ -387,14 +376,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }).forEach(function (key) {
 	          layout += _this.conf.keys.layout + '.' + key + '=' + JSON.stringify(header[key]) + ';';
 	        });
-	        layout = layout ? '[[ var ' + this.conf.keys.layout + '={};' + layout + ' ]]' : '';
+	        layout = layout ? '[[ var ' + this.conf.keys.layout + '={};' + layout + ' ]] ' : '';
 
-	        return layout + ' ' + this.tmpl;
+	        return '' + layout + this.tmpl;
 	      }
 
 	      var masterLayoutTemplate = new LayoutTemplate({
-	        conf: this.conf,
-	        tmpl: layoutStore.get(this.deps.master.path)
+	        conf: Object.assign({}, this.conf, {
+	          filename: this.deps.master.path
+	        }),
+	        tmpl: layoutHelper.store.get(this.deps.master.path)
 	      });
 
 	      var newHeader = Object.assign({}, this.header, header);
@@ -414,17 +405,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	/**
+	 * Initialize the config
+	 * @param {object} conf - The configuration
+	 */
+
+
+	exports.default = LayoutTemplate;
+	function initConfig(conf) {
+	  var result = Object.assign({}, conf);
+	  if (conf.filename) {
+	    result.filepath = _path2.default.dirname(conf.filename);
+	  }
+	  return result;
+	}
+
+	/**
 	 * Parses the template looking for file dependencies (but doesn't load the dependency files).
 	 * @param {object} conf - The configuration
 	 * @param {string} tmpl - The template string to parse
 	 */
-
-
 	function parseTemplate(conf, tmpl) {
 	  // header
 	  var header = {};
 	  var cleanTmpl = tmpl.replace(conf.header, function (m, headerStr) {
-	    header = yaml.safeLoad(headerStr);
+	    header = _jsYaml2.default.safeLoad(headerStr);
 	    return '';
 	  });
 
@@ -434,13 +438,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var masterPath = header[conf.keys.master];
 	  if (masterPath) {
 	    deps.master = {
-	      path: path.resolve(conf.path, header[conf.keys.master])
+	      path: lookupFile(conf, header[conf.keys.master])
 	    };
 	  }
 
 	  // replace partial call's relative path to full path
 	  cleanTmpl = cleanTmpl.replace(conf.partial, function (m, partialPath) {
-	    var fullPath = path.resolve(conf.path, partialPath);
+	    var fullPath = lookupFile(conf, partialPath);
 	    deps.partials.set(partialPath, {
 	      path: fullPath
 	    });
@@ -454,17 +458,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}
 
-	exports.default = LayoutTemplate;
+	/**
+	 * Lookup files for express from
+	 *  - relative to current file
+	 *  - relative to views
+	 * @param {object} conf - The configuration
+	 * @param {string} fileRelative - The relative path of the file
+	 */
+	function lookupFile(conf, fileRelative) {
+	  var relativeToFile = _path2.default.resolve(conf.filepath, fileRelative);
+	  if (layoutHelper.store.exist(relativeToFile)) {
+	    return relativeToFile;
+	  }
+
+	  if (conf.settings && conf.settings.views) {
+	    if (!Array.isArray(conf.settings.views)) {
+	      var fromView = _path2.default.resolve(conf.settings.views, fileRelative);
+	      if (layoutHelper.store.exist(fromView)) {
+	        return fromView;
+	      }
+	    }
+
+	    for (var i = 0; i < conf.settings.views.length; i += 1) {
+	      var _fromView = _path2.default.resolve(conf.settings.views[i], fileRelative);
+	      if (layoutHelper.store.exist(_fromView)) {
+	        return _fromView;
+	      }
+	    }
+	  }
+
+	  return relativeToFile;
+	}
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	'use strict';
-
-	var yaml = __webpack_require__(4);
-
-	module.exports = yaml;
+	module.exports = require("path");
 
 /***/ },
 /* 4 */
@@ -472,8 +502,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var loader = __webpack_require__(5);
-	var dumper = __webpack_require__(34);
+	var yaml = __webpack_require__(5);
+
+	module.exports = yaml;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var loader = __webpack_require__(6);
+	var dumper = __webpack_require__(35);
 
 	function deprecated(name) {
 	  return function () {
@@ -481,25 +521,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}
 
-	module.exports.Type = __webpack_require__(11);
-	module.exports.Schema = __webpack_require__(10);
-	module.exports.FAILSAFE_SCHEMA = __webpack_require__(14);
-	module.exports.JSON_SCHEMA = __webpack_require__(13);
-	module.exports.CORE_SCHEMA = __webpack_require__(12);
-	module.exports.DEFAULT_SAFE_SCHEMA = __webpack_require__(9);
-	module.exports.DEFAULT_FULL_SCHEMA = __webpack_require__(29);
+	module.exports.Type = __webpack_require__(12);
+	module.exports.Schema = __webpack_require__(11);
+	module.exports.FAILSAFE_SCHEMA = __webpack_require__(15);
+	module.exports.JSON_SCHEMA = __webpack_require__(14);
+	module.exports.CORE_SCHEMA = __webpack_require__(13);
+	module.exports.DEFAULT_SAFE_SCHEMA = __webpack_require__(10);
+	module.exports.DEFAULT_FULL_SCHEMA = __webpack_require__(30);
 	module.exports.load = loader.load;
 	module.exports.loadAll = loader.loadAll;
 	module.exports.safeLoad = loader.safeLoad;
 	module.exports.safeLoadAll = loader.safeLoadAll;
 	module.exports.dump = dumper.dump;
 	module.exports.safeDump = dumper.safeDump;
-	module.exports.YAMLException = __webpack_require__(7);
+	module.exports.YAMLException = __webpack_require__(8);
 
 	// Deprecated schema names from JS-YAML 2.0.x
-	module.exports.MINIMAL_SCHEMA = __webpack_require__(14);
-	module.exports.SAFE_SCHEMA = __webpack_require__(9);
-	module.exports.DEFAULT_SCHEMA = __webpack_require__(29);
+	module.exports.MINIMAL_SCHEMA = __webpack_require__(15);
+	module.exports.SAFE_SCHEMA = __webpack_require__(10);
+	module.exports.DEFAULT_SCHEMA = __webpack_require__(30);
 
 	// Deprecated functions from JS-YAML 1.x.x
 	module.exports.scan = deprecated('scan');
@@ -508,18 +548,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports.addConstructor = deprecated('addConstructor');
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	/*eslint-disable max-len,no-use-before-define*/
 
-	var common = __webpack_require__(6);
-	var YAMLException = __webpack_require__(7);
-	var Mark = __webpack_require__(8);
-	var DEFAULT_SAFE_SCHEMA = __webpack_require__(9);
-	var DEFAULT_FULL_SCHEMA = __webpack_require__(29);
+	var common = __webpack_require__(7);
+	var YAMLException = __webpack_require__(8);
+	var Mark = __webpack_require__(9);
+	var DEFAULT_SAFE_SCHEMA = __webpack_require__(10);
+	var DEFAULT_FULL_SCHEMA = __webpack_require__(30);
 
 	var _hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -1997,7 +2037,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports.safeLoad = safeLoad;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2056,7 +2096,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports.extend = extend;
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	// YAML error class. http://stackoverflow.com/questions/8458984
@@ -2101,12 +2141,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = YAMLException;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var common = __webpack_require__(6);
+	var common = __webpack_require__(7);
 
 	function Mark(name, buffer, position, line, column) {
 	  this.name = name;
@@ -2177,7 +2217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Mark;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// JS-YAML's default schema for `safeLoad` function.
@@ -2189,25 +2229,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var Schema = __webpack_require__(10);
+	var Schema = __webpack_require__(11);
 
 	module.exports = new Schema({
-	  include: [__webpack_require__(12)],
-	  implicit: [__webpack_require__(22), __webpack_require__(23)],
-	  explicit: [__webpack_require__(24), __webpack_require__(26), __webpack_require__(27), __webpack_require__(28)]
+	  include: [__webpack_require__(13)],
+	  implicit: [__webpack_require__(23), __webpack_require__(24)],
+	  explicit: [__webpack_require__(25), __webpack_require__(27), __webpack_require__(28), __webpack_require__(29)]
 	});
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	/*eslint-disable max-len*/
 
-	var common = __webpack_require__(6);
-	var YAMLException = __webpack_require__(7);
-	var Type = __webpack_require__(11);
+	var common = __webpack_require__(7);
+	var YAMLException = __webpack_require__(8);
+	var Type = __webpack_require__(12);
 
 	function compileList(schema, name, result) {
 	  var exclude = [];
@@ -2311,12 +2351,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Schema;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var YAMLException = __webpack_require__(7);
+	var YAMLException = __webpack_require__(8);
 
 	var TYPE_CONSTRUCTOR_OPTIONS = ['kind', 'resolve', 'construct', 'instanceOf', 'predicate', 'represent', 'defaultStyle', 'styleAliases'];
 
@@ -2368,7 +2408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Type;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Standard YAML's Core schema.
@@ -2380,14 +2420,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var Schema = __webpack_require__(10);
+	var Schema = __webpack_require__(11);
 
 	module.exports = new Schema({
-	  include: [__webpack_require__(13)]
+	  include: [__webpack_require__(14)]
 	});
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Standard YAML's JSON schema.
@@ -2400,15 +2440,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var Schema = __webpack_require__(10);
+	var Schema = __webpack_require__(11);
 
 	module.exports = new Schema({
-	  include: [__webpack_require__(14)],
-	  implicit: [__webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21)]
+	  include: [__webpack_require__(15)],
+	  implicit: [__webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22)]
 	});
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Standard YAML's Failsafe schema.
@@ -2417,19 +2457,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var Schema = __webpack_require__(10);
+	var Schema = __webpack_require__(11);
 
 	module.exports = new Schema({
-	  explicit: [__webpack_require__(15), __webpack_require__(16), __webpack_require__(17)]
+	  explicit: [__webpack_require__(16), __webpack_require__(17), __webpack_require__(18)]
 	});
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	module.exports = new Type('tag:yaml.org,2002:str', {
 	  kind: 'scalar',
@@ -2439,12 +2479,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	module.exports = new Type('tag:yaml.org,2002:seq', {
 	  kind: 'sequence',
@@ -2454,12 +2494,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	module.exports = new Type('tag:yaml.org,2002:map', {
 	  kind: 'mapping',
@@ -2469,12 +2509,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	function resolveYamlNull(data) {
 	  if (data === null) return true;
@@ -2515,12 +2555,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	function resolveYamlBoolean(data) {
 	  if (data === null) return false;
@@ -2558,13 +2598,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var common = __webpack_require__(6);
-	var Type = __webpack_require__(11);
+	var common = __webpack_require__(7);
+	var Type = __webpack_require__(12);
 
 	function isHexCode(c) {
 	  return 0x30 /* 0 */ <= c && c <= 0x39 /* 9 */ || 0x41 /* A */ <= c && c <= 0x46 /* F */ || 0x61 /* a */ <= c && c <= 0x66 /* f */;
@@ -2739,13 +2779,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var common = __webpack_require__(6);
-	var Type = __webpack_require__(11);
+	var common = __webpack_require__(7);
+	var Type = __webpack_require__(12);
 
 	var YAML_FLOAT_PATTERN = new RegExp('^(?:[-+]?(?:[0-9][0-9_]*)\\.[0-9_]*(?:[eE][-+][0-9]+)?' + '|\\.[0-9_]+(?:[eE][-+][0-9]+)?' + '|[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\\.[0-9_]*' + '|[-+]?\\.(?:inf|Inf|INF)' + '|\\.(?:nan|NaN|NAN))$');
 
@@ -2848,12 +2888,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	var YAML_DATE_REGEXP = new RegExp('^([0-9][0-9][0-9][0-9])' + // [1] year
 	'-([0-9][0-9])' + // [2] month
@@ -2951,12 +2991,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	function resolveYamlMerge(data) {
 	  return data === '<<' || data === null;
@@ -2968,7 +3008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;'use strict';
@@ -2980,10 +3020,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	try {
 	  // A trick for browserified version, to not include `Buffer` shim
 	  var _require = require;
-	  NodeBuffer = __webpack_require__(25).Buffer;
+	  NodeBuffer = __webpack_require__(26).Buffer;
 	} catch (__) {}
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	// [ 64, 65, 66 ] -> [ padding, CR, LF ]
 	var BASE64_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\n\r';
@@ -3115,18 +3155,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = require("buffer");
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	var _hasOwnProperty = Object.prototype.hasOwnProperty;
 	var _toString = Object.prototype.toString;
@@ -3173,12 +3213,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	var _toString = Object.prototype.toString;
 
@@ -3239,12 +3279,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	var _hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -3274,7 +3314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// JS-YAML's default schema for `load` function.
@@ -3288,20 +3328,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var Schema = __webpack_require__(10);
+	var Schema = __webpack_require__(11);
 
 	module.exports = Schema.DEFAULT = new Schema({
-	  include: [__webpack_require__(9)],
-	  explicit: [__webpack_require__(30), __webpack_require__(31), __webpack_require__(32)]
+	  include: [__webpack_require__(10)],
+	  explicit: [__webpack_require__(31), __webpack_require__(32), __webpack_require__(33)]
 	});
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	function resolveJavascriptUndefined() {
 	  return true;
@@ -3329,12 +3369,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	function resolveJavascriptRegExp(data) {
 	  if (data === null) return false;
@@ -3394,7 +3434,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;'use strict';
@@ -3411,13 +3451,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	try {
 	  // workaround to exclude package from browserify list.
 	  var _require = require;
-	  esprima = __webpack_require__(33);
+	  esprima = __webpack_require__(34);
 	} catch (_) {
 	  /*global window */
 	  if (typeof window !== 'undefined') esprima = window.esprima;
 	}
 
-	var Type = __webpack_require__(11);
+	var Type = __webpack_require__(12);
 
 	function resolveJavascriptFunction(data) {
 	  if (data === null) return false;
@@ -3477,7 +3517,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -9298,7 +9338,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* vim: set sw=4 ts=4 et tw=80 : */
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9307,10 +9347,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var common = __webpack_require__(6);
-	var YAMLException = __webpack_require__(7);
-	var DEFAULT_FULL_SCHEMA = __webpack_require__(29);
-	var DEFAULT_SAFE_SCHEMA = __webpack_require__(9);
+	var common = __webpack_require__(7);
+	var YAMLException = __webpack_require__(8);
+	var DEFAULT_FULL_SCHEMA = __webpack_require__(30);
+	var DEFAULT_SAFE_SCHEMA = __webpack_require__(10);
 
 	var _toString = Object.prototype.toString;
 	var _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -10063,12 +10103,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports.safeDump = safeDump;
 
 /***/ },
-/* 35 */
-/***/ function(module, exports) {
-
-	module.exports = require("path");
-
-/***/ },
 /* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -10084,20 +10118,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _bracket2 = _interopRequireDefault(_bracket);
 
+	var _CacheStore = __webpack_require__(37);
+
+	var _CacheStore2 = _interopRequireDefault(_CacheStore);
+
+	var _DiskStore = __webpack_require__(38);
+
+	var _DiskStore2 = _interopRequireDefault(_DiskStore);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var LayoutHelper = function () {
-	  function LayoutHelper(_ref) {
-	    var store = _ref.store;
+	var cacheStore = new _CacheStore2.default();
+	var diskStore = new _DiskStore2.default();
 
+	var LayoutHelper = function () {
+	  function LayoutHelper() {
 	    _classCallCheck(this, LayoutHelper);
 
-	    if (!store) {
-	      throw new Error('Expected a store to be provided');
-	    }
-	    this.store = store;
+	    this.store = cacheStore;
 	  }
 
 	  /**
@@ -10113,6 +10153,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var result = template(partialModel);
 	      return result;
 	    }
+
+	    /**
+	     * Enables or disables the cache
+	     */
+
+	  }, {
+	    key: 'enableCache',
+	    value: function enableCache(enable) {
+	      this.store = enable ? cacheStore : diskStore;
+	    }
 	  }]);
 
 	  return LayoutHelper;
@@ -10122,6 +10172,129 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _DiskStore = __webpack_require__(38);
+
+	var _DiskStore2 = _interopRequireDefault(_DiskStore);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var CacheStore = function () {
+	  function CacheStore() {
+	    _classCallCheck(this, CacheStore);
+
+	    this.diskStore = new _DiskStore2.default();
+	    this.readCache = new Map();
+	  }
+
+	  /**
+	   * Gets the file (from cache or file)
+	   */
+
+
+	  _createClass(CacheStore, [{
+	    key: 'get',
+	    value: function get(filepath) {
+	      var fromCache = this.readCache.get(filepath);
+	      if (fromCache) {
+	        return fromCache;
+	      }
+
+	      var file = this.diskStore.get(filepath);
+	      this.readCache.set(filepath, file);
+
+	      return file;
+	    }
+
+	    /**
+	     * Checks if a file exists
+	     */
+
+	  }, {
+	    key: 'exist',
+	    value: function exist(filepath) {
+	      return this.readCache.has(filepath) || this.diskStore.exist(filepath);
+	    }
+	  }]);
+
+	  return CacheStore;
+	}();
+
+	exports.default = CacheStore;
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _fs = __webpack_require__(39);
+
+	var _fs2 = _interopRequireDefault(_fs);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var DiskStore = function () {
+	  function DiskStore() {
+	    _classCallCheck(this, DiskStore);
+	  }
+
+	  _createClass(DiskStore, [{
+	    key: 'get',
+
+	    /**
+	     * Gets the file (from cache or file)
+	     */
+	    value: function get(filepath) {
+	      var raw = _fs2.default.readFileSync(filepath, 'utf8');
+	      var clean = raw.replace(/^\uFEFF/, '');
+
+	      return clean;
+	    }
+
+	    /**
+	     * Checks if a file exists
+	     */
+
+	  }, {
+	    key: 'exist',
+	    value: function exist(filepath) {
+	      return _fs2.default.existsSync(filepath);
+	    }
+	  }]);
+
+	  return DiskStore;
+	}();
+
+	exports.default = DiskStore;
+
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+	module.exports = require("fs");
+
+/***/ },
+/* 40 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -10181,60 +10354,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	exports.default = LayoutDependency;
-
-/***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _fs = __webpack_require__(39);
-
-	var fs = _interopRequireWildcard(_fs);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var TemplateStore = function () {
-	  function TemplateStore() {
-	    _classCallCheck(this, TemplateStore);
-
-	    this.readCache = new Map();
-	  }
-
-	  _createClass(TemplateStore, [{
-	    key: 'get',
-	    value: function get(filepath) {
-	      var fromCache = this.readCache.get(filepath);
-	      if (fromCache) {
-	        return fromCache;
-	      }
-
-	      var raw = fs.readFileSync(filepath, 'utf8');
-	      var clean = raw.replace(/^\uFEFF/, '');
-	      this.readCache.set(filepath, clean);
-
-	      return clean;
-	    }
-	  }]);
-
-	  return TemplateStore;
-	}();
-
-	exports.default = TemplateStore;
-
-/***/ },
-/* 39 */
-/***/ function(module, exports) {
-
-	module.exports = require("fs");
 
 /***/ }
 /******/ ])

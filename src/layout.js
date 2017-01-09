@@ -23,8 +23,8 @@ const settings = {
     layout: 'layout', // header ref name
   },
 
-  // root path for views
-  path: process.cwd(),
+  // filepath
+  filepath: process.cwd(),
 
   // helper methods
   helpers: {},
